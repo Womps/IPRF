@@ -205,25 +205,10 @@ let rec nub = fun l ->
 (* Test de la fonction nub : *)
 nub hello;;
 
-(* Question 8 : Fonction count_different_valid_words
-
-   Cette fonction sera utilisée pour compter le nombre de mots valides différents dans la fonction count_words. 
-
-   count_different_valid_words : word list -> int -> int = <fun>
-
-   @param  text  La liste de mots, à analyser.
-   @param  acc   L'accumulateur, pour compter le nombre de mots valides différents, dans text.
-   @return int   Retourne la valeur de l'accumulateur, une fois le texte parcouru.
-*)
-let rec count_different_valid_words = fun text -> fun acc ->
-  match text with
-  | []       -> acc   
-  | h::t     -> if is_valid h && not(List.mem h t) then count_different_valid_words t (acc+1) else count_different_valid_words t acc
-;;
-
 (* Question 8 : Fonction count_words
 
-   La fonction count_words récupère une liste de mots dans un fichier, sur la donnée d'un chemin vers un fichier texte. 
+   La fonction count_words récupère une liste de mots dans un fichier, sur la donnée d'un chemin vers un fichier texte. On aurait pu utiliser des List.fold_left, ou faire des fonctions auxiliaires pour compter le nombre de mots valides et de mots valides différents. Comme la liste de mots issue de get_words est une liste de mots valides uniquement (il n'y a pas de mots invalides, en sortie de cette fonction), nous pouvons directement utiliser List.length, sans avoir besoin de reparcourir la liste, et de vérifier tous les mots uns par uns.
+
    Retourne un couple (m, n) où :
            * m est le nombre de mots valides dans le fichier,
            * n est le nombre de mots valides différents dans le fichier.
@@ -235,8 +220,8 @@ let rec count_different_valid_words = fun text -> fun acc ->
 *)
 let count_words = fun file ->
   let text = get_words file in
-  let m = List.fold_left (fun acc -> fun w -> if is_valid w then (acc+1) else acc) 0 text in
-  let n = count_different_valid_words text 0 in
+  let m = List.length text in
+  let n = List.length (nub text) in
   (m, n)
 ;;
 
