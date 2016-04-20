@@ -228,3 +228,43 @@ let count_words = fun file ->
 count_words "fichier.txt";;
 count_words "test.txt";;
 count_words "lorem.txt";;
+
+(* === PARTIE 3 : LA STRUCTURE DE TRIE === *)
+module CharMap = Map.Make (Char) ;;
+type trie = T of int * trie CharMap.t ;;
+
+(* Déclaration d'un Trie vide : *)
+let empty_trie = T (0, CharMap.empty) ;;
+
+(* Construction du Trie de la figure 1, de façon non efficace : *)
+let ns = T (1, CharMap.empty);;
+let ne = T (2, CharMap.add 's' ns CharMap.empty);;
+let na = T (1, CharMap.empty);;
+let nl = T (0, CharMap.add 'a' na (CharMap.add 'e' ne CharMap.empty));; 
+let nn = T (1, CharMap.empty);;
+let nu = T (0, CharMap.add 'n' nn CharMap.empty);;
+let example = T (0, CharMap.add 'l' nl (CharMap.add 'u' nu CharMap.empty));;
+
+(* Question 10 : Fonction trie_get 
+   
+   La fonction trie_get prend un mot w et un trie t en entrée, pour renvoyer la valeur associée à w, dans t. Si le mot w ne peut pas être retrouvé dans l'arbre (aucun fils ne correspond à la lettre que l'on cherche à lire), alors on renvoie la valeur 0.
+
+   trie_get : word -> trie -> int = <fun>
+
+   @param  w    Le mot à chercher dans l'arbre.
+   @param  t    L'arbre t dans lequel chercher le mot w.
+   @return int  La valeur associée au mot w, dans l'arbre t.
+*)
+let rec trie_get = fun (w : word) -> fun t ->
+  match t with
+  | T (x, y)      -> if (List.length w) < 1 then x
+                     else
+                         if (CharMap.mem (List.hd w) y) then
+	                   trie_get (List.tl w) (CharMap.find (List.hd w) y)
+                         else
+                             0
+;;
+
+(* Test de la fonction trie_get : *)
+trie_get ['l'; 'e'; 's'] example;;
+trie_get ['l'; 'e'] example;;
