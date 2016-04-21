@@ -282,11 +282,14 @@ trie_get ['l'; 'e'] example;;
 let rec trie_incr = fun (w : word) -> fun tr ->
   match tr with
   | T (v, m)        -> match w with
-		               | []           -> T (v+1, m)
-                       | h::t         -> let s = if CharMap.mem h m then CharMap.find h m else T (0, CharMap.empty) in
-										 let s' = trie_incr t s in
-										 let m' = CharMap.add h s' m in
-										 T(v, m')
+	               | []           -> T (v+1, m)
+                       | h::t         -> let s =
+					   if CharMap.mem h m then
+			                     CharMap.find h m
+					   else T (0, CharMap.empty) in
+					 let s' = trie_incr t s in
+					 let m' = CharMap.add h s' m in
+					 T(v, m')
 ;;
 
 (* Test de la fonction trie_incr : *)
@@ -294,14 +297,22 @@ trie_get ['l'; 'e'; 's'] example;;
 let newTrie = trie_incr ['l'; 'e'; 's'] example;;
 trie_get ['l'; 'e'; 's'] newTrie;;
 
-let rec trie_construction = fun text -> fun tr ->
-	match text with
-	| []       -> T (0, CharMap.empty)
-	| h::t     -> let tr' = trie_incr h tr in
-				  let final_trie = trie_construction t tr' in
-				  final_trie
-;;
+(* Question 12 : Fonction trie_construction
 
+   Fonction qui prend en entrée un chemin vers un fichier, pour renvoyer le trie construit à partir des mots de ce fichier.
+   
+   trie_words : string -> trie = <fun>
+   
+   @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
+   @return trie L'arbre construite à partir des mots du fichier donné en entrée.
+*)
+let rec trie_construction = fun text -> fun tr ->
+  match text with
+  | []       -> T (0, CharMap.empty)
+  | h::t     -> let tr' = trie_incr h tr in
+      		let final_trie = trie_construction t tr' in
+		final_trie
+;;
 
 (* Question 12 : Fonction trie_words
 
@@ -312,16 +323,16 @@ let rec trie_construction = fun text -> fun tr ->
    @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
    @return trie L'arbre construite à partir des mots du fichier donné en entrée.
 *)
-let trie_words = fun s -> fun tr ->
+let trie_words = fun s -> fun (tr : trie)->
   let text = get_words s in
   let empty_trie = T (0, CharMap.empty) in
-  let add = trie_construction text empty_trie in
-  add
+  let trie_built = trie_construction text empty_trie in
+  trie_built
 ;;
 
 (* Test de la fonction trie_words : *)
-let trie = trie_words "fichier.txt";;
-trie_get ['c'; 'o'; 'd'; 'e'] trie;;
+let test_trie_words = trie_words "fichier.txt";;
+trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;;
 
 let trie_card_test = fun key -> fun data -> fun a ->
 	
