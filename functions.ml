@@ -268,3 +268,68 @@ let rec trie_get = fun (w : word) -> fun t ->
 (* Test de la fonction trie_get : *)
 trie_get ['l'; 'e'; 's'] example;;
 trie_get ['l'; 'e'] example;;
+
+(* Question 11 : Fonction trie_incr 
+
+   La fonction trie_incr prend un mot w et un trie tr en entrée, pour renvoyer un nouveau trie tr' dans lequel la valeur associée à w a été augmentée de 1.
+
+   trie_incr : word -> trie -> trie = <fun>
+
+   @param  w    Le mot pour lequel on veut incrémenter de 1 la valeur dans l'arbre.
+   @param  t    L'arbre dans lequel on veut incrémenter la valeur de w.
+   @return trie L'arbre avec la nouvelle valeur associée à w.
+*)
+let rec trie_incr = fun (w : word) -> fun tr ->
+  match tr with
+  | T (v, m)        -> match w with
+		               | []           -> T (v+1, m)
+                       | h::t         -> let s = if CharMap.mem h m then CharMap.find h m else T (0, CharMap.empty) in
+										 let s' = trie_incr t s in
+										 let m' = CharMap.add h s' m in
+										 T(v, m')
+;;
+
+(* Test de la fonction trie_incr : *)
+trie_get ['l'; 'e'; 's'] example;;
+let newTrie = trie_incr ['l'; 'e'; 's'] example;;
+trie_get ['l'; 'e'; 's'] newTrie;;
+
+let rec trie_construction = fun text -> fun tr ->
+	match text with
+	| []       -> T (0, CharMap.empty)
+	| h::t     -> let tr' = trie_incr h tr in
+				  let final_trie = trie_construction t tr' in
+				  final_trie
+;;
+
+
+(* Question 12 : Fonction trie_words
+
+   Fonction qui prend en entrée un chemin vers un fichier, pour renvoyer le trie construit à partir des mots de ce fichier.
+   
+   trie_words : string -> trie = <fun>
+   
+   @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
+   @return trie L'arbre construite à partir des mots du fichier donné en entrée.
+*)
+let trie_words = fun s -> fun tr ->
+  let text = get_words s in
+  let empty_trie = T (0, CharMap.empty) in
+  let add = trie_construction text empty_trie in
+  add
+;;
+
+(* Test de la fonction trie_words : *)
+let trie = trie_words "fichier.txt";;
+trie_get ['c'; 'o'; 'd'; 'e'] trie;;
+
+let trie_card_test = fun key -> fun data -> fun a ->
+	
+;;
+
+(* Question 13 : Fonction trie_card
+*)
+let rec trie_card = fun trie ->
+  match trie with
+  | T (v, m)        -> if CharMap.is_empty m then 0 else 1 + CharMap.fold trie_card m 0
+;;
