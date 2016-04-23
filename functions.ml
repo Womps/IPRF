@@ -299,16 +299,16 @@ trie_get ['l'; 'e'; 's'] newTrie;;
 
 (* Question 12 : Fonction trie_construction
 
-   Fonction qui prend en entrée un chemin vers un fichier, pour renvoyer le trie construit à partir des mots de ce fichier.
+   Cette fonction va nous permettre de parcourir la liste de mots text en entrée, et d'ajouter chaque mots à l'arbre tr.
    
-   trie_words : string -> trie = <fun>
+   trie_construction : word list -> trie = <fun>
    
-   @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
-   @return trie L'arbre construite à partir des mots du fichier donné en entrée.
+   @param  text La liste de mots à ajouter à l'arbre tr.
+   @return trie L'arbre construit à partir de la liste de mots.
 *)
 let rec trie_construction = fun text -> fun tr ->
   match text with
-  | []       -> T (0, CharMap.empty)
+  | []       -> trie_incr [] tr
   | h::t     -> let tr' = trie_incr h tr in
       		let final_trie = trie_construction t tr' in
 		final_trie
@@ -323,7 +323,7 @@ let rec trie_construction = fun text -> fun tr ->
    @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
    @return trie L'arbre construite à partir des mots du fichier donné en entrée.
 *)
-let trie_words = fun s -> fun (tr : trie)->
+let trie_words = fun s ->
   let text = get_words s in
   let empty_trie = T (0, CharMap.empty) in
   let trie_built = trie_construction text empty_trie in
@@ -332,14 +332,13 @@ let trie_words = fun s -> fun (tr : trie)->
 
 (* Test de la fonction trie_words : *)
 let test_trie_words = trie_words "fichier.txt";;
-trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;;
-
-let trie_card_test = fun key -> fun data -> fun a ->
-	
-;;
+trie_get ['l'; 'e'] test_trie_words;;
 
 (* Question 13 : Fonction trie_card
 *)
+let trie_count = fun ->
+;;
+
 let rec trie_card = fun trie ->
   match trie with
   | T (v, m)        -> if CharMap.is_empty m then 0 else 1 + CharMap.fold trie_card m 0
