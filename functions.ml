@@ -335,11 +335,32 @@ let test_trie_words = trie_words "fichier.txt";;
 trie_get ['l'; 'e'] test_trie_words;;
 
 (* Question 13 : Fonction trie_card
+
+   Cette fonction compte le nombre de noeuds qui ont une valeur non nulle dans un trie donné.
+
+   trie_card : trie -> int = <fun>
 *)
-let trie_count = fun ->
+let trie_count = fun key -> fun assoc_data -> fun acc ->
+  match assoc_data with
+  | T (v, m)       -> if (v != 0) && CharMap.is_empty m then 1 else acc
 ;;
 
-let rec trie_card = fun trie ->
-  match trie with
-  | T (v, m)        -> if CharMap.is_empty m then 0 else 1 + CharMap.fold trie_card m 0
+let trie_card = fun tr ->
+  match tr with
+  | T (v, m)     ->CharMap.fold trie_count tr 0;;
+
+trie_card test_trie_words;;
+trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;;
+trie_card example;;
+
+
+let rec trie_card = fun tr ->
+  match tr with
+  | T(v,m)     -> if CharMap.is_empty m then if v=0 then 0 else 1
+                  else
+                   if v = 0 then 
+		      CharMap.fold (fun key -> fun assoc_data -> fun acc -> trie_card assoc_data) m 0
+		   else
+		      CharMap.fold (fun key -> fun assoc_data -> fun acc -> 1 + trie_card assoc_data) m 1
 ;;
+trie_card test_trie_words;;
