@@ -487,7 +487,7 @@ let empty_trie = T (0, CharMap.empty);;
 
 
 (* alti => itla *)
-let alti1 = T (30, CharMap.empty);; (* h::t *)
+let alti1 = T (3, CharMap.empty);; (* h::t *)
 let alti2 = T (20, CharMap.add 'i' alti1 CharMap.empty);; (* h::t *)
 let alti3 = T (21, CharMap.add 'v' alti2 CharMap.empty);; (* h::t *)
 let alti33 = T (2, CharMap.add 'v' alti3 CharMap.empty);; (* h::t *)
@@ -613,9 +613,23 @@ let rec trie_word_most = fun ta (w : word) (tr : trie) ->
 													(u, v) -> if u > tai then (u, v) else (tai, wor) 
 					) (CharMap.bindings m) (0,[])
 ;;
+
+let rec trie_word_most = fun (w : word) (tr : trie) ->
+	match tr with
+	T (v, m) -> if CharMap.is_empty m 
+					then ((List.length w), w)
+				else
+					List.fold_right (
+						fun (a, b) (tai, wor) -> match trie_word_most (a::w) b with
+													(u, v) -> if u > tai then (u, v) else (tai, wor) 
+					) (CharMap.bindings m) (0,[])
+;;
+
+
 (* trie_word_most 0 [] racine;; *)
 
 
+let max_3 = fun x -> fun  y-> fun z ->max z (max x y) ;; 
 (* Mot le plus utilisé et son nombre d'occurance*)
 let rec trie_use_occu = fun (w : word) (tr : trie) ->
 	match tr with
@@ -624,14 +638,84 @@ let rec trie_use_occu = fun (w : word) (tr : trie) ->
 				else
 					List.fold_right (
 						fun (a, b) (oc, wo) -> match trie_use_occu (a::w) b with
-												(p, q) -> if v > oc || p > oc
-															then if v > p
-																	then (p, q)
-																else 
-																	(v, w)
-														else
-															(oc, wo)
+												(p, q) -> let mx = (max_3 oc p v) in
+															if mx = v 
+																then (v, w)
+															else if mx = p
+																then (p, q)
+															else
+																(oc, wo)
 					) (CharMap.bindings m) (0,[])
 ;;
 (* trie_use_occu [] racine;; *)
+
+(* Mot le plus utilisé et son nombre d'occurance*)
+let rec trie_word_most = fun ta (w : word) (tr : trie) taMax ->
+	match tr with
+	T (v, m) -> if CharMap.is_empty m 
+					then (ta, w)
+				else
+					List.fold_right (
+						fun (a, b) (tai, wor) -> match trie_word_most (ta+1) (a::w) b taMax with
+													(x, y) -> ta 
+					) (CharMap.bindings m) (0,[])
+;;
+
+(* Liste des mots de plus de n lettres*)
+let rec concat l1 l2 = match l1 with
+| [] -> l2
+| x::l'1 -> x::(concat l'1 l2);;
+
+let rec trie_word_tai = fun (tr : trie) taMax (w : word)  ->
+  match tr with
+	T (v, m) -> List.fold_right (
+								fun (a, b) c -> if (List.length (a::w)) > taMax && (match b with T (f, g) -> f) > 0
+													then concat (List.rev(a::w))::c) (trie_word_tai b taMax (a::w))
+												else
+													concat c (trie_word_tai b taMax (a::w))
+								) (CharMap.bindings m) []
+;;
+
+(* trie_word_tai racine 1 [];;*)
+
+(* Liste des mots répétés plus de k fois*)
+let rec trie_word_rep = fun (tr : trie) taMax (w : word)  ->
+  match tr with
+	T (v, m) -> List.fold_right (
+								fun (a, b) c -> if (match b with T (f, g) -> f) > taMax
+													then concat (List.rev(a::w))::c) (trie_word_rep b taMax (a::w))
+												else
+													concat c (trie_word_rep b taMax (a::w))
+								) (CharMap.bindings m) []
+;;
+
+trie_word_rep racine 2 [];;
+
+
+
+(* Liste des mots commencant par un prefix donné*)
+let rec verif_pref = fun (pref : word) (w : word) ->
+	match pref with
+		[] -> true
+		| hp::tp -> (match w with
+					[] -> true
+					| hw::tw -> if hp = hw then verif_pref tp tw else false)
+;;								
+
+let rec trie_word_pref = fun (tr : trie) (pref : word) (w : word)  ->
+  match tr with
+	T (v, m) -> List.fold_right ( fun (a, b) c -> if verif_pref pref (List.rev (a::w)) 
+													then (if (List.length pref) <= (List.length (a::w)) && (match b with T (f, g) -> f) > 0
+														then concat ((List.rev(a::w))::c) (trie_word_pref b pref (a::w))
+													else
+														concat c (trie_word_pref b pref (a::w)))
+												else
+													c
+								) (CharMap.bindings m) []
+;;
+
+let test = trie_word_pref racine ['a'; 'l'] [];;
+
+
+
 
