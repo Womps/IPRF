@@ -331,36 +331,96 @@ let trie_words = fun s ->
 ;;
 
 (* Test de la fonction trie_words : *)
-let test_trie_words = trie_words "fichier.txt";;
-trie_get ['l'; 'e'] test_trie_words;;
+(*let test_trie_words = trie_words "fichier.txt";;
+trie_get ['l'; 'e'] test_trie_words;;*)
 
 (* Question 13 : Fonction trie_card
 
    Cette fonction compte le nombre de noeuds qui ont une valeur non nulle dans un trie donné.
 
    trie_card : trie -> int = <fun>
+   
+   @param   tr   L'arbre pour lequel on doit compter les noeuds avec une valeur non nulle.
+   @return  int  Le nombre entier, correspondant au cardinal des noeuds avec une valeur non nulle dans l'arbre tr.
 *)
-let trie_count = fun key -> fun assoc_data -> fun acc ->
-  match assoc_data with
-  | T (v, m)       -> if (v != 0) && CharMap.is_empty m then 1 else acc
-;;
-
-let trie_card = fun tr ->
-  match tr with
-  | T (v, m)     ->CharMap.fold trie_count tr 0;;
-
-trie_card test_trie_words;;
-trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;;
-trie_card example;;
-
-
 let rec trie_card = fun tr ->
   match tr with
-  | T(v,m)     -> if CharMap.is_empty m then if v=0 then 0 else 1
-                  else
-                   if v = 0 then 
-		      CharMap.fold (fun key -> fun assoc_data -> fun acc -> trie_card assoc_data) m 0
-		   else
-		      CharMap.fold (fun key -> fun assoc_data -> fun acc -> 1 + trie_card assoc_data) m 1
+  | T (v, m)       -> if v = 0 then 
+						let acc = 0 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
+					  else 
+						let acc = 1 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
 ;;
+
+
+(* Test de la fonction trie_card : 
 trie_card test_trie_words;;
+trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;; *)
+trie_card example;;
+
+(* Question 14 : Fonction trie_sum
+
+   Cette fonction retourne la somme des valeurs contenues dans les noeuds d'un trie donné.
+
+   trie_sum : trie -> int = <fun>
+   
+   @param   tr   L'arbre pour lequel on doit faire la somme des valeurs contenues dans le trie.
+   @return  int  Le nombre entier, correspondant à la somme des valeurs contenues dans le trie.
+*)
+let rec trie_sum = fun tr ->
+  match tr with
+  | T (v, m)       -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_sum assoc_data) m v
+;;
+
+(* Test de la fonction trie_sum : *)
+trie_sum example;;
+
+(* Question 15 : Fonction count_words_v2 
+   
+   La fonction count_words_v2 retourne la même chose que count_words mais en utilisant les trie que nous venons d'implémenter, au lieu de listes.
+
+   Retourne un couple (m, n) où :
+	   * m est le nombre de mots valides dans le fichier,
+	   * n est le nombre de mots valides différents dans le fichier.
+   
+   count_words_v2 : string -> (int * int) = <fun>
+   
+   @param   f     Le fichier à lire en entrée.
+   @return  tuple Retourne un couple d'entiers (m, n).
+*)
+let count_words_v2 = fun f ->
+	let trie = trie_words f in
+	let m = trie_sum trie in
+	let n = trie_card trie in
+	(m, n)
+;;
+
+(* Test de la fonction count_words_v2 : 
+count_words_v2 "lorem.txt";;*)
+(* Question 16 : 
+
+3. mot le plus long et sa taille,
+4. mot le plus utilisé et son nombre d'occurrences,
+5. liste des mots de plus de n lettres,
+6. liste des mots répétés plus de k fois,
+7. liste des mots commençant par un préfixe donné.
+*)
+
+let rec trie_word_most = fun ta (w : word) (tr : trie) taMax ->
+	match tr with
+	T (v, m) -> if CharMap.is_empty m 
+					then (ta, w)
+				else
+					List.fold_right (
+						fun (a, b) (tai, wor) -> match trie_word_most (ta+1) (a::w) b taMax with
+													(x, y) -> ta 
+					) (CharMap.bindings m) (0,[])
+;;
+
+let rec trie_search_longer_word = fun tri -> fun w -> fun size -> maxSize ->
+	match tri with
+	| T (v, m)      -> if CharMap.is_empty m then (w, size)
+						else CharMap.fold 
+;;
+let trie_longer_word = fun tr -> let (w, size) = trie_search_longer_word tr [] 0 0 in (w, size);;
+
+trie_longer_word example;;
