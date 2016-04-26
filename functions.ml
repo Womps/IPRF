@@ -351,7 +351,6 @@ let rec trie_card = fun tr ->
 						let acc = 1 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
 ;;
 
-
 (* Test de la fonction trie_card : 
 trie_card test_trie_words;;
 trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;; *)
@@ -396,7 +395,11 @@ let count_words_v2 = fun f ->
 
 (* Test de la fonction count_words_v2 : 
 count_words_v2 "lorem.txt";;*)
-(* Question 16 : 
+(* Question 16 : Fonction trie_longer_word 
+
+   Cette fonction retourne un couple, le premier élément étant le mot le plus long dans l'arbre. Le deuxième étant sa taille.
+   
+   trie_longer_word : trie -> (word * int) = <fun>
 
 3. mot le plus long et sa taille,
 4. mot le plus utilisé et son nombre d'occurrences,
@@ -416,11 +419,15 @@ let rec trie_word_most = fun ta (w : word) (tr : trie) taMax ->
 					) (CharMap.bindings m) (0,[])
 ;;
 
-let rec trie_search_longer_word = fun tri -> fun w -> fun size -> maxSize ->
-	match tri with
-	| T (v, m)      -> if CharMap.is_empty m then (w, size)
-						else CharMap.fold 
-;;
-let trie_longer_word = fun tr -> let (w, size) = trie_search_longer_word tr [] 0 0 in (w, size);;
 
+let trie_manage_longer_word = fun key -> fun assoc_data -> fun acc ->
+	match acc with 
+	| []             -> (key::[], 1)::(key::[], 1)
+	| (a, b)::(c, d) -> if CharMap.is_empty assoc_data then if b < d then 
+;;
+
+let rec trie_longer_word = fun tr ->
+match tr with
+| T (v, m)                    -> let w = CharMap.fold trie_manage_longer_word m [] 
+;;
 trie_longer_word example;;
