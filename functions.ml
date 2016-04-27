@@ -283,7 +283,7 @@ let rec trie_incr = fun (w : word) -> fun tr ->
   match tr with
   | T (v, m)        -> match w with
 	               | []           -> T (v+1, m)
-                       | h::t         -> let s =
+                   | h::t         -> let s =
 					   if CharMap.mem h m then
 			                     CharMap.find h m
 					   else T (0, CharMap.empty) in
@@ -402,32 +402,75 @@ count_words_v2 "lorem.txt";;*)
    trie_longer_word : trie -> (word * int) = <fun>
 
 3. mot le plus long et sa taille,
-4. mot le plus utilisé et son nombre d'occurrences,
-5. liste des mots de plus de n lettres,
-6. liste des mots répétés plus de k fois,
-7. liste des mots commençant par un préfixe donné.
 *)
 
-let rec trie_word_most = fun ta (w : word) (tr : trie) taMax ->
-	match tr with
-	T (v, m) -> if CharMap.is_empty m 
-					then (ta, w)
-				else
-					List.fold_right (
-						fun (a, b) (tai, wor) -> match trie_word_most (ta+1) (a::w) b taMax with
-													(x, y) -> ta 
-					) (CharMap.bindings m) (0,[])
-;;
-
-
-let trie_manage_longer_word = fun key -> fun assoc_data -> fun acc ->
-	match acc with 
-	| []             -> (key::[], 1)::(key::[], 1)
-	| (a, b)::(c, d) -> if CharMap.is_empty assoc_data then if b < d then 
-;;
-
 let rec trie_longer_word = fun tr ->
-match tr with
-| T (v, m)                    -> let w = CharMap.fold trie_manage_longer_word m [] 
+	match tr with
+	| T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
+												let nextWord = trie_longer_word assoc_data in
+												let size     = match nextWord with (x, y) -> y in
+												let nextKey  = match nextWord with (x, y) -> x in
+												match acc with
+												| (x, y)       -> if y > size then acc else (key::nextKey, size + 1)) m ([], 0)
 ;;
+
 trie_longer_word example;;
+
+let newTrie = trie_incr ['l'; 'e'; 's'; 's'] example;;
+trie_get ['l'; 'e'; 's'] newTrie;;
+
+trie_longer_word newTrie;;
+
+(* 4. mot le plus utilisé et son nombre d'occurrences, *)
+let rec trie_most_used_word = fun tr ->
+	match tr with
+	| T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
+												let nextWord = trie_most_used_word assoc_data in
+												let nextV    = match nextWord with (x, y) -> y in
+												let nextKey  = match nextWord with (x, y) -> x in
+												match acc with
+												| (x, y)       -> if y > nextV then acc else (key::nextKey, nextV)) m ([], v)
+;;
+
+trie_most_used_word example;;
+
+trie_get ['l'; 'e'; 's'] example;;
+let newTrie = trie_incr ['l'; 'e'; 's'] example;;
+trie_get ['l'; 'e'; 's'] newTrie;;
+
+trie_most_used_word newTrie;;
+
+let trieTest = trie_incr ['u';'n'] example;;
+trie_get ['u';'n'] trieTest;;
+
+trie_most_used_word trieTest;;
+
+
+(* 5. liste des mots de plus de n lettres,
+
+*)
+let rec trie_words_with_more_n_letters = fun tr -> fun n ->
+	match tr with
+	| T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
+												let nextWord = trie_most_used_word assoc_data in
+												let nextV    = match nextWord with (x, y) -> y in
+												let nextKey  = match nextWord with (x, y) -> x in
+												match acc with
+												| (x, y)       -> if y > nextV then acc else (key::nextKey, nextV)) m ([], v)
+;;
+
+(* 6. liste des mots répétés plus de k fois, *)
+let rec trie_words_k_repeat = fun tr -> fun k ->
+	match tr with
+	| T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
+												let nextKey = trie_words_k_repeat assoc_data k in
+												match nextKey with
+												| h::t      ->
+												let word     = key::nextWord in
+												if v >= k then word::acc else acc) m []
+;;
+trie_words_k_repeat trieTest 2;;
+(* 
+7. liste des mots commençant par un préfixe donné.
+*)
+trie_words_k_repeat example 2;;
