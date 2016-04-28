@@ -445,7 +445,12 @@ trie_get ['u';'n'] trieTest;;
 
 trie_most_used_word trieTest;;
 
+trie_get ['l'; 'a'] example;;
+let newTrie = trie_incr ['l'; 'a'] example;;
+let trieLA = trie_incr ['l'; 'a'] newTrie;;
+trie_get ['l'; 'a'] trieLA;;
 
+trie_most_used_word trieLA;;
 (* 5. liste des mots de plus de n lettres,
 
 *)
@@ -463,14 +468,24 @@ let rec trie_words_with_more_n_letters = fun tr -> fun n ->
 let rec trie_words_k_repeat = fun tr -> fun k ->
 	match tr with
 	| T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
-												let nextKey = trie_words_k_repeat assoc_data k in
-												match nextKey with
-												| h::t      ->
-												let word     = key::nextWord in
-												if v >= k then word::acc else acc) m []
+											  let listOfWords = trie_words_k_repeat assoc_data k in
+											  let currentWord = match listOfWords with 
+											                    | [] -> [] 
+																| h::t -> h in
+											  let newWord = key::currentWord in
+											  if v >= k then newWord::acc else acc) m []
 ;;
-trie_words_k_repeat trieTest 2;;
+trie_words_k_repeat trieLA 3;;
 (* 
 7. liste des mots commençant par un préfixe donné.
+
 *)
+let ns = T (1, CharMap.empty);;
+let ne = T (2, CharMap.add 's' ns CharMap.empty);;
+let na = T (1, CharMap.empty);;
+let nl = T (0, CharMap.add 'a' na (CharMap.add 'e' ne CharMap.empty));; 
+let nn = T (1, CharMap.empty);;
+let nu = T (0, CharMap.add 'n' nn CharMap.empty);;
+let example = T (0, CharMap.add 'l' nl (CharMap.add 'u' nu CharMap.empty));;
+
 trie_words_k_repeat example 2;;
