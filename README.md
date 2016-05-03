@@ -11,11 +11,11 @@ En revanche, j'ai modifié le code pour la troisième partie. Pour utilier le ty
 ## Compilation
 
 Pour compiler, placez vous à la racine du projet.
-Vous pouvez utiliser la commande ```make``` pour générer l'exécutable.
+Vous pouvez utiliser la commande `make` pour générer l'exécutable.
 
 ## Tests
 
-Pour essayer le code que vous aurez compilé, vous trouverez l'exécutable dans le répertoire ```test```
+Pour essayer le code que vous aurez compilé, vous trouverez l'exécutable dans le répertoire `test`
 Dans ce répertoire se trouvent aussi les différents fichiers textes que j'utilise pour tester mes fonctions.
 
 ## Arborescence du projet
