@@ -74,7 +74,7 @@ let rec to_lower = fun (w : word) ->
 (* Test de la fonction to_lower : *)
 to_lower hello;;
 
-(* Question 4 : Fonction first_valid_char 
+(* Question 4 : Fonction first_valid_char (Partie 1/2)
 
    La fonction first_valid_char parcourt un mot w. Elle s'arrête et retourne le mot w, dès qu'elle trouve une lettre valide.
 
@@ -90,7 +90,7 @@ let rec first_valid_char = fun w ->
   | h::t     -> if is_a_letter h then (w : word) else (first_valid_char t : word)
 ;;
 
-(* Question 4 : Fonction trim
+(* Question 4 : Fonction trim (Partie 2/2)
 
    La fonction trim utilise la fonction first_valid_char. Comme la fonction first_valid_char retourne la première lettre valide, avec la suite du mot, on lui passe notre mot à l'envers, afin de partir de la fin, pour s'arrêter dès que l'on croise une lettre valide, et ainsi supprimer toutes les lettres du mot, après la dernière lettre valide. Le retour de first_valid_char est de nouveau inversé, pour remettre le mot à l'endroit.
 
@@ -154,7 +154,7 @@ let get_words = fun file ->
 
 (* === PARTIE 2 : RÉCUPÉRATION DE LA LISTE DES MOTS D'UN FICHIER TEXTE ===
 
-   Question 5 : Fonction print_word
+   Question 5 : Fonction print_word (Partie 1/2)
 
    Cette fonction est utilisée pour afficher le mot contenu dans la liste en entrée. 
 
@@ -165,7 +165,7 @@ let get_words = fun file ->
 *)
 let print_word = fun (w : word) -> List.iter (Printf.printf "%c") w;;
 
-(* Question 5 : Fonction print_text
+(* Question 5 : Fonction print_text (Partie 2/2)
 
    Cette fonction permet d'afficher chaque mot contenu dans une liste de mots. Cela nous permet ainsi de tester le code fourni et la fonction print_word.
 
@@ -311,8 +311,8 @@ let rec build_trie = fun trie -> fun acc -> fun input ->
 (* trie_words : Sur la donnee du chemin vers un fichier, renvoie le trie construit a partir des mots de ce fichier. On s'aide du code fourni a section 2 et de la fonction precedente build_trie *)
 (* trie_words : string -> trie *)
 let trie_words = fun file ->
-  let tmp = handle_file (build_trie empty_trie []) file in
-  tmp
+  let trie_built = handle_file (build_trie empty_trie []) file in
+  trie_built
 ;;
 (* Question 12 : Fonction trie_construction
 
@@ -363,9 +363,9 @@ trie_get ['l'; 'e'] test_trie_words;;
 let rec trie_card = fun tr ->
   match tr with
   | T (v, m)        -> if v = 0 then 
-						let acc = 0 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
+                        let acc = 0 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
 					  else 
-						let acc = 1 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
+                        let acc = 1 in CharMap.fold (fun key -> fun assoc_data -> fun acc -> acc + trie_card assoc_data) m acc
 ;;
 
 (* Test de la fonction trie_card : *)
@@ -422,15 +422,14 @@ count_words_v2 "lorem.txt";;
    @param   tr    Le trie dans lequel chercher le mot le plus long.
    @return  tuple Retourne un couple (word * int), word étant le mot trouvé, et l'entier, sa taille.
 *)
-
 let rec trie_longer_word = fun tr ->
   match tr with
   | T (v, m)               -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
-							  let nextWord = trie_longer_word assoc_data in
-						      let size     = match nextWord with (x, y) -> y in
-						      let nextKey  = match nextWord with (x, y) -> x in
-						      match acc with
-						      | (x, y)       -> if y > size then acc else (key::nextKey, size + 1)) m ([], 0)
+                              let nextWord = trie_longer_word assoc_data in
+                              let size     = match nextWord with (x, y) -> y in
+                              let nextKey  = match nextWord with (x, y) -> x in
+                              match acc with
+                              | (x, y)       -> if y > size then acc else (key::nextKey, size + 1)) m ([], 0)
 ;;
 
 (* Test de la fonction trie_longer_word : *)
@@ -451,11 +450,11 @@ trie_longer_word newTrie;;
 let rec trie_most_used_word = fun tr ->
 	match tr with
 	| T (v, m)                -> CharMap.fold (fun key -> fun assoc_data -> fun acc -> 
-								 let nextWord = trie_most_used_word assoc_data in
-								 let nextV    = match nextWord with (x, y) -> y in
-								 let nextKey  = match nextWord with (x, y) -> x in
-								 match acc with
-								 | (x, y)       -> if y > nextV then acc else (key::nextKey, nextV)) m ([], v)
+                                 let nextWord = trie_most_used_word assoc_data in
+                                 let nextV    = match nextWord with (x, y) -> y in
+                                 let nextKey  = match nextWord with (x, y) -> x in
+                                 match acc with
+                                 | (x, y)       -> if y > nextV then acc else (key::nextKey, nextV)) m ([], v)
 ;;
 
 (* Test de la fonction trie_most_used_word : *)
@@ -473,22 +472,42 @@ let trieLA = trie_incr ['l'; 'a'] newTrie;;
 trie_get ['l'; 'a'] trieLA;;
 trie_most_used_word trieLA;;
 
-(* 5. liste des mots de plus de n lettres,
+(* Question 16 : Fonction trie_search_words_n_letters (Question N°5 de l'introduction, partie 1/2)
 
+   Cette fonction parcours le trie tr passé en paramètre, et retourne une liste de mots constitués d'au moins n lettres.
+   
+   trie_search_words_n_letters : trie -> int -> word list -> word -> word list = <fun>
+   
+   @param   tr                Le trie dans lequel chercher les mots d'au moins n lettres.
+   @param   n                 Le nombre de lettres que le mot doit compter, pour faire partie de la liste que l'on renvoie.
+   @param   wordsAlreadySeen  La liste de mots, qui nous permet d'accumuler les mots d'au moins n lettres, en parcourant l'arbre.
+   @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
+   @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots constitués d'au moins n lettres.
 *)
 let rec trie_search_words_n_letters = fun tr -> fun n -> fun wordsAlreadySeen -> fun currentWord ->
 	match tr with
 	| T (v, m)               -> if CharMap.is_empty m then 
-							      if (List.length currentWord) >= n then List.rev (currentWord)::wordsAlreadySeen 
-								  else wordsAlreadySeen 
-								else CharMap.fold (fun key -> fun assoc_data -> fun acc -> let newWord = key::currentWord in 
-																							if (List.length currentWord) >= n then trie_search_words_n_letters assoc_data n (List.rev (currentWord)::acc) newWord
-																							else trie_search_words_n_letters assoc_data n acc newWord) m wordsAlreadySeen
+                                  if (List.length currentWord) >= n && v > 0 then List.rev (currentWord)::wordsAlreadySeen 
+                                  else wordsAlreadySeen 
+                                else CharMap.fold (fun key -> fun assoc_data -> fun acc -> let newWord = key::currentWord in 
+                                                                                           if (List.length currentWord) >= n && v > 0 then trie_search_words_n_letters assoc_data n (List.rev (currentWord)::acc) newWord
+                                                                                           else trie_search_words_n_letters assoc_data n acc newWord) m wordsAlreadySeen
 ;;
 
+(* Question 16 : Fonction trie_words_more_n_letters (Question N°5 de l'introduction, partie 2/2)
+
+   Cette fonction fait appel à la fonction définie juste avant, pour parcourir l'arbre, et récupérer les mots constitués d'au moins n lettres.
+   
+   trie_words_more_n_letters : trie -> int -> word list = <fun>
+   
+   @param   tr                Le trie dans lequel chercher les mots d'au moins n lettres.
+   @param   k                 Le nombre de lettres que le mot doit compter, pour faire partie de la liste que l'on renvoie.
+   @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots constitués d'au moins n lettres.
+*)
 let trie_words_more_n_letters = fun tr -> fun n -> trie_search_words_n_letters tr n [] [];;
 
-trie_words_more_n_letters trieLA 3;;
+(* Test de la fonction trie_words_more_n_letters : *)
+trie_words_more_n_letters trieLA 2;;
 
 (* Question 16 : Fonction trie_search_words_k_repeat (Question N°6 de l'introduction, partie 1/2)
 
@@ -498,18 +517,18 @@ trie_words_more_n_letters trieLA 3;;
    
    @param   tr                Le trie dans lequel chercher les mots répétés au moins k fois.
    @param   k                 Le nombre de fois que le mot doit être répété, pour faire partie de la liste que l'on renvoie.
-   @param   wordsAlreadySeen  La liste de mots renvoyée à la fin, qui nous permet d'accumuler les mots répétés plus de k fois, en parcourant l'arbre.
+   @param   wordsAlreadySeen  La liste de mots, qui nous permet d'accumuler les mots répétés plus de k fois, en parcourant l'arbre.
    @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
-   @return  word list         Une liste de mots qui sont répétés au moins k fois.
+   @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots répétés au moins k fois.
 *)
 let rec trie_search_words_k_repeat = fun tr -> fun k -> fun wordsAlreadySeen -> fun currentWord ->
 	match tr with
 	| T (v, m)               -> if CharMap.is_empty m then 
-							      if v >= k then (currentWord)::wordsAlreadySeen 
-								  else wordsAlreadySeen 
-								else CharMap.fold (fun key -> fun assoc_data -> fun acc -> let newWord = key::currentWord in 
-																							if v >= k then trie_search_words_k_repeat assoc_data k (currentWord::acc) newWord
-																							else trie_search_words_k_repeat assoc_data k acc newWord) m wordsAlreadySeen
+                                  if v >= k && v > 0 then (List.rev currentWord)::wordsAlreadySeen 
+                                  else wordsAlreadySeen 
+                                else CharMap.fold (fun key -> fun assoc_data -> fun acc -> let newWord = key::currentWord in 
+                                                                                           if v >= k && v > 0 then trie_search_words_k_repeat assoc_data k ((List.rev currentWord)::acc) newWord
+                                                                                           else trie_search_words_k_repeat assoc_data k acc newWord) m wordsAlreadySeen
 ;;
 
 (* Question 16 : Fonction trie_words_k_repeat (Question N°6 de l'introduction, partie 2/2)
@@ -525,7 +544,45 @@ let rec trie_search_words_k_repeat = fun tr -> fun k -> fun wordsAlreadySeen -> 
 let trie_words_k_repeat = fun tr -> fun k -> trie_search_words_k_repeat tr k [] [];;
 
 (* Test de la fonction trie_words_k_repeat : *)
-trie_words_k_repeat trieLA 1;;
+trie_words_k_repeat trieLA 2;;
 
-(*7. liste des mots commençant par un préfixe donné *)
-let trie_prefix = fun tr -> fun prefix -> ;;
+(* Question 16 : Fonction trie_search_words_with_prefix (Question N°7 de l'introduction, partie 1/2)
+
+   Cette fonction parcours le trie tr passé en paramètre, et retourne une liste de mots dont le préfixe correspond à celui donné en paramètre.
+   
+   trie_search_words_with_prefix : trie -> word -> word list -> word -> word list = <fun>
+   
+   @param   tr                Le trie dans lequel chercher les mots dont le préfixe est le paramètre prefix.
+   @param   prefix            Le préfixe qui doit composer le mot, pour que le mot fasse partie de la liste que l'on renvoie.
+   @param   wordsAlreadySeen  La liste de mots, qui nous permet d'accumuler les mots composés du préfixe donné, en parcourant l'arbre.
+   @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
+   @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots composés du préfixe donné en paramètre.
+*)
+let rec trie_search_words_with_prefix = fun tr -> fun prefix -> fun wordsAlreadySeen -> fun currentWord ->
+	match tr with
+	| T (v, m)               -> if CharMap.is_empty m then 
+                                  if ((List.length prefix) = 0 && v > 0) then (List.rev currentWord)::wordsAlreadySeen 
+                                  else wordsAlreadySeen 
+                                else CharMap.fold (fun key -> fun assoc_data -> fun acc -> let newWord = key::currentWord in 
+                                                                                           if (List.length prefix = 0) then 
+                                                                                             if (v > 0) then trie_search_words_with_prefix assoc_data [] ((List.rev currentWord)::acc) newWord
+                                                                                             else trie_search_words_with_prefix assoc_data [] acc newWord
+                                                                                           else
+                                                                                             if (key = List.hd prefix) then trie_search_words_with_prefix assoc_data (List.tl prefix) acc newWord
+                                                                                             else trie_search_words_with_prefix assoc_data prefix acc newWord) m wordsAlreadySeen
+;;
+
+(* Question 16 : Fonction trie_words_with_prefix (Question N°7 de l'introduction, partie 2/2)
+
+   Cette fonction fait appel à la fonction définie juste avant, pour parcourir l'arbre, et récupérer les mots commençant pas le préfixe donné.
+   
+   trie_words_with_prefix : trie -> word -> word list = <fun>
+   
+   @param   tr                Le trie dans lequel chercher les mots dont le préfixe est le paramètre prefix.
+   @param   prefix            Le préfixe qui doit composer le mot, pour que le mot fasse partie de la liste que l'on renvoie.
+   @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots composés du préfixe donné en paramètre.
+*)
+let trie_words_with_prefix = fun tr -> fun prefix -> trie_search_words_with_prefix tr prefix [] [];;
+
+(* Test de la fonction trie_words_with_prefix : *)
+trie_words_with_prefix trieLA ['l'; 'e'];;
