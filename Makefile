@@ -2,7 +2,7 @@ CAMLC = ocamlc
 OCAMLCFLAGS= -c
 
 SRCDIR   = src
-OBJDIR   = _build
+OBJDIR   = obj
 BINDIR   = test
 TARGET   = IPRF_Analyseur_De_Texte_Romain_EPIARD
 

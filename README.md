@@ -29,6 +29,6 @@ Dans ce répertoire se trouvent aussi les différents fichiers textes que j'util
  
  ./src/*.ml;*.mli
  
- ./_build/*.cmo;*.cmi
+ ./obj/*.cmo;*.cmi
  
  ./test/<executable>;*.txt
