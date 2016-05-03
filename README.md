@@ -1,4 +1,4 @@
-# IPRF - Projet d'analyse d'un fichier text en OCaml
+# IPRF - Projet d'analyse d'un fichier texte en OCaml
 
 Dans ce readme, vous trouverez les informations pour compiler, et tester le projet.
 Vous retrouverez de toute façon une grande partie de ces informations dans le rapport.
