@@ -3,12 +3,16 @@
    Programmation Fonctionnelle (IPRF)
    Projet : Analyse d'un fichier texte en OCaml.
 
+   Module questions.
+   
    === PARTIE 1 : ÉCHAUFFEMENT ===
    Type word, donné dans le sujet : 
 *)
 type word = char list;;
+open textproc;;
 
-let hello = (['H'; 'e'; 'l'; 'l'; 'o'] : word);;
+(* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
+let hello = ['H'; 'e'; 'l'; 'l'; 'o'];;
 let car1 = 'h';;
 let car2 = '-';;
 let car3 = '\'';;
@@ -46,7 +50,7 @@ is_a_letter car5;;
    @param  w        Le mot contenant les caractères à évaluer.
    @return booléen  True si le mot est non vide et constitué de lettres valides, sinon false.
 *)
-let rec is_valid = fun (w : word) ->
+let rec is_valid = fun w ->
   match w with
   | []                             -> false
   | [c]                            -> is_a_letter c
@@ -65,10 +69,10 @@ is_valid hello;;
    @param  w     Le mot à rendre en minuscule.
    @return word  Le mot passé en minuscule.
 *)
-let rec to_lower = fun (w : word) ->
+let rec to_lower = fun w ->
   match w with
-  | []                                  -> ([] : word)
-  | h::t                                -> (Char.lowercase h::to_lower t : word)
+  | []                                  -> []
+  | h::t                                -> Char.lowercase h::to_lower t
 ;;
 
 (* Test de la fonction to_lower : *)
@@ -85,9 +89,9 @@ to_lower hello;;
 *)
 let rec first_valid_char = fun w ->
   match w with
-  | []       -> ([] : word)
-  | [h]      -> if is_a_letter h then ([h] : word) else ([] : word)
-  | h::t     -> if is_a_letter h then (w : word) else (first_valid_char t : word)
+  | []       -> []
+  | [h]      -> if is_a_letter h then [h] else []
+  | h::t     -> if is_a_letter h then w else first_valid_char t
 ;;
 
 (* Question 4 : Fonction trim (Partie 2/2)
@@ -99,58 +103,18 @@ let rec first_valid_char = fun w ->
    @param  w     Le mot à traiter.
    @return word  Retourne le mot avec les caractères, suivant la dernière lettre valide, supprimés.
 *)
-let trim = fun (w : word) -> (List.rev (first_valid_char (List.rev w)) : word);;
+let trim = fun w -> (List.rev first_valid_char (List.rev w));;
 
+(* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
+let test1 = ['e'; 't'; 'c'; '.'; '.'; '.'];;
+let test2 = ['a'; '.'; 'b'];;
+let test3 = ['a'; '.'; 'b'; '.'; '.'; '.'];;
+let test4 = ['H'; 'e'; 'l'; 'l'; 'o'; ','; ' '; 'n'; 'i'; 'c'; 'e'; ' '; 't'; 'o'; ' '; 'm'; 'e'; 'e'; 't'; ' '; 'y'; 'o'; 'u'; '.'; '.'; '!'];;
 (* Test de la fonction trim : *)
-let test1 = (['e'; 't'; 'c'; '.'; '.'; '.'] : word);;
-let test2 = (['a'; '.'; 'b'] : word);;
-let test3 = (['a'; '.'; 'b'; '.'; '.'; '.'] : word);;
-let test4 = (['H'; 'e'; 'l'; 'l'; 'o'; ','; ' '; 'n'; 'i'; 'c'; 'e'; ' '; 't'; 'o'; ' '; 'm'; 'e'; 'e'; 't'; ' '; 'y'; 'o'; 'u'; '.'; '.'; '!'] : word);;
 trim test1;;
 trim test2;;
 trim test3;;
 trim test4;;
-
-(* handle_file: (in_channel -> 'a) -> string -> 'a *)
-let handle_file = fun f -> fun file ->
-  let input = open_in file in
-  let res = f input in
-  let _ = close_in input in
-  res
-;;
-
-(* my_input_char: in_channel -> char option *)
-let get_char = fun input ->
-  try  Some (input_char input)
-  with End_of_file -> None
-;;
-
-(* update_acc: word -> in_channel -> word *)
-let rec update_acc = fun acc -> fun input ->
-  match get_char input with
-  | None -> acc
-  | Some c -> update_acc (c::acc) input
- ;;
-
-(* words: char list -> word -> word list -> word list *)
-let rec words = fun l -> fun w -> fun acc ->
-  match l, w with
-  | [], []    -> acc
-  | [], _     -> w :: acc
-  | c::cs, [] -> if c=' ' then words cs [] acc
-                 else words cs [c] acc
-  | c::cs, _  -> if c=' ' then words cs [] (w::acc)
-                 else words cs (c::w) acc
-;;
-
-
-(* get_words: string -> word list *)
-let get_words = fun file ->
-  let lc  = handle_file (update_acc []) file in
-  let lw  = words lc [] [] in
-  let lw' = List.map (fun w -> to_lower (trim w)) lw in
-  List.filter is_valid lw'
-;;
 
 (* === PARTIE 2 : RÉCUPÉRATION DE LA LISTE DES MOTS D'UN FICHIER TEXTE ===
 
@@ -163,7 +127,7 @@ let get_words = fun file ->
    @param  w     Le mot à afficher.
    @return unit  Ne retourne rien.
 *)
-let print_word = fun (w : word) -> List.iter (Printf.printf "%c") w;;
+let print_word = fun w -> List.iter (Printf.printf "%c") w;;
 
 (* Question 5 : Fonction print_text (Partie 2/2)
 
@@ -213,7 +177,7 @@ nub hello;;
            * m est le nombre de mots valides dans le fichier,
            * n est le nombre de mots valides différents dans le fichier.
 
-   count_words : string -> int * int = <fun>
+   count_words : string -> (int * int) = <fun>
 
    @param   file   Le chemin vers un fichier contenant du texte.
    @return  tuple  Retourne un couple d'entiers (m, n).
@@ -255,7 +219,7 @@ let example = T (0, CharMap.add 'l' nl (CharMap.add 'u' nu CharMap.empty));;
    @param  t    L'arbre t dans lequel chercher le mot w.
    @return int  La valeur associée au mot w, dans l'arbre t.
 *)
-let rec trie_get = fun (w : word) -> fun t ->
+let rec trie_get = fun w -> fun t ->
   match t with
   | T (x, y)      -> if (List.length w) < 1 then x
                      else
@@ -279,7 +243,7 @@ trie_get ['l'; 'e'] example;;
    @param  t    L'arbre dans lequel on veut incrémenter la valeur de w.
    @return trie L'arbre avec la nouvelle valeur associée à w.
 *)
-let rec trie_incr = fun (w : word) -> fun tr ->
+let rec trie_incr = fun w -> fun tr ->
   match tr with
   | T (v, m)        -> match w with
 	               | []           -> T (v+1, m)
