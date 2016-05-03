@@ -218,7 +218,7 @@ val trie_card : trie -> int
    @param   tr   L'arbre pour lequel on doit faire la somme des valeurs contenues dans le trie.
    @return  int  Le nombre entier, correspondant à la somme des valeurs contenues dans le trie.
 *)
-val trie_sum = trie -> int
+val trie_sum : trie -> int
 
 (* Question 15 : Fonction count_words_v2 
    

@@ -9,7 +9,8 @@
    Type word, donné dans le sujet : 
 *)
 type word = char list;;
-open textproc;;
+
+(* open textproc;;*)
 
 (* Décommenter cette ligne, si vous êtes dans l'interpréteur : 
     
@@ -108,7 +109,7 @@ let rec first_valid_char = fun w ->
    @param  w     Le mot à traiter.
    @return word  Retourne le mot avec les caractères, suivant la dernière lettre valide, supprimés.
 *)
-let trim = fun w -> (List.rev first_valid_char (List.rev w));;
+let trim = fun w -> (List.rev (first_valid_char (List.rev w)));;
 
 (* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
 let test1 = ['e'; 't'; 'c'; '.'; '.'; '.'];;

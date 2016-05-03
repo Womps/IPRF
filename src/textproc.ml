@@ -1,5 +1,3 @@
-open question;;
-
 (* handle_file: (in_channel -> 'a) -> string -> 'a *)
 let handle_file = fun f -> fun file ->
   let input = open_in file in
