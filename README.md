@@ -1,5 +1,4 @@
 # IPRF - Projet d'analyse d'un fichier text en OCaml
-## Romain EPIARD
 
 Dans ce readme, vous trouverez les informations pour compiler, et tester le projet.
 Vous retrouverez de toute façon une grande partie de ces informations dans le rapport.
@@ -20,7 +19,7 @@ Pour essayer le code que vous aurez compilé, vous trouverez l'exécutable dans 
 Dans ce répertoire se trouvent aussi les différents fichiers textes que j'utilise pour tester mes fonctions.
 
 ## Arborescence du projet
-
+```
  ./Sujet.pdf
  
  ./Romain_EPIARD_Projet_IPRF_Rapport.pdf
@@ -32,3 +31,6 @@ Dans ce répertoire se trouvent aussi les différents fichiers textes que j'util
  ./_build/*.cmo;*.cmi
  
  ./test/IPRF_Analyseur_De_Texte_Romain_EPIARD;*.txt
+```
+## Auteur
+- Romain EPIARD
