@@ -21,15 +21,10 @@ Dans ce répertoire se trouvent aussi les différents fichiers textes que j'util
 ## Arborescence du projet
 ```
  ./Sujet.pdf
- 
  ./Romain_EPIARD_Projet_IPRF_Rapport.pdf
- 
  ./Makefile
- 
  ./src/*.ml;*.mli
- 
  ./_build/*.cmo;*.cmi
- 
  ./test/IPRF_Analyseur_De_Texte_Romain_EPIARD;*.txt
 ```
 ## Auteur
