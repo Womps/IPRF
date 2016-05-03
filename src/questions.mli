@@ -5,7 +5,7 @@
 
    Interface du module questions.
 *)
-type word = char list
+type word
 
 (* Définition de différentes variables, qui nous permettront de réaliser divers tests : *)
 val hello : word
@@ -132,8 +132,7 @@ val nub : 'a list -> 'a list
 val count_words : string -> (int * int)
 
 (* === PARTIE 3 : LA STRUCTURE DE TRIE === *)
-module CharMap = Map.Make (Char)
-type trie = T of int * trie CharMap.t
+type trie
 
 (* Déclaration d'un Trie vide : *)
 val empty_trie : trie

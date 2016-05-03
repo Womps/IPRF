@@ -3,13 +3,18 @@
    Programmation Fonctionnelle (IPRF)
    Projet : Analyse d'un fichier texte en OCaml.
 
-   Module questions.
+   Implémentation du module questions.
    
    === PARTIE 1 : ÉCHAUFFEMENT ===
    Type word, donné dans le sujet : 
 *)
 type word = char list;;
 open textproc;;
+
+(* Décommenter cette ligne, si vous êtes dans l'interpréteur : 
+    
+   #use "./textproc.ml"
+*)
 
 (* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
 let hello = ['H'; 'e'; 'l'; 'l'; 'o'];;
