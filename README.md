@@ -29,6 +29,6 @@ Dans ce répertoire se trouvent aussi les différents fichiers textes que j'util
  
  ./src/*.ml;*.mli
  
- ./obj/*.cmo;*.cmi
+ ./_build/*.cmo;*.cmi
  
- ./test/<executable>;*.txt
+ ./test/IPRF_Analyseur_De_Texte_Romain_EPIARD;*.txt
