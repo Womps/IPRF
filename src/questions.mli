@@ -76,6 +76,21 @@ val test2 : word
 val test3 : word
 val test4 : word
 
+(* handle_file : (in_channel -> 'a) -> string -> 'a *)
+val handle_file : (in_channel -> 'a) -> string -> 'a
+
+(* my_input_char: in_channel -> char option *)
+val get_char : in_channel -> char option
+
+(* update_acc: word -> in_channel -> word *)
+val update_acc : word -> in_channel -> word 
+
+(* words: char list -> word -> word list -> word list *)
+val words : char list -> word -> word list -> word list
+
+(* get_words: string -> word list *)
+val get_words : string -> word list
+
 (* === PARTIE 2 : RÉCUPÉRATION DE LA LISTE DES MOTS D'UN FICHIER TEXTE ===
 
    Question 5 : Fonction print_word (Partie 1/2)
@@ -182,7 +197,7 @@ val newTrie : trie
    @param  text La liste de mots à ajouter à l'arbre tr.
    @return trie L'arbre construit à partir de la liste de mots.
 *)
-val trie_construction : word list -> trie
+val trie_build : trie -> word -> in_channel -> trie
 
 (* Question 12 : Fonction trie_words
 
@@ -342,4 +357,4 @@ val trie_search_words_with_prefix : trie -> word -> word list -> word -> word li
    @param   prefix            Le préfixe qui doit composer le mot, pour que le mot fasse partie de la liste que l'on renvoie.
    @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots composés du préfixe donné en paramètre.
 *)
-val trie_words_with_prefix : trie -> word -> word list -> word -> word list
+val trie_words_with_prefix : trie -> word -> word list

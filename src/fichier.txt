@@ -1,1 +1,0 @@
-Bonjour, Je suis un fichier contenant du texte, pour pouvoir tester le code du prof. Le code du prof permet de recuperer le texte dans un fichier texte. Merci, Au revoir

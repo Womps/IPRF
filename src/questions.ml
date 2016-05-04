@@ -10,15 +10,8 @@
 *)
 type word = char list;;
 
-(* open textproc;;*)
-
-(* Décommenter cette ligne, si vous êtes dans l'interpréteur : 
-    
-   #use "./textproc.ml"
-*)
-
 (* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
-let hello = ['H'; 'e'; 'l'; 'l'; 'o'];;
+let hello = (['H'; 'e'; 'l'; 'l'; 'o'] : word);;
 let car1 = 'h';;
 let car2 = '-';;
 let car3 = '\'';;
@@ -41,11 +34,11 @@ let is_a_letter = fun c ->
 ;;
 
 (* Tests de la fonction is_a_letter : *)
-is_a_letter car1;;
-is_a_letter car2;;
-is_a_letter car3;;
-is_a_letter car4;;
-is_a_letter car5;;
+let ret1 = is_a_letter car1;;
+let ret2 = is_a_letter car2;;
+let ret3 = is_a_letter car3;;
+let ret4 = is_a_letter car4;;
+let ret5 = is_a_letter car5;;
 
 (* Question 2 : Fonction is_valid
 
@@ -56,7 +49,7 @@ is_a_letter car5;;
    @param  w        Le mot contenant les caractères à évaluer.
    @return booléen  True si le mot est non vide et constitué de lettres valides, sinon false.
 *)
-let rec is_valid = fun w ->
+let rec is_valid = fun (w : word) ->
   match w with
   | []                             -> false
   | [c]                            -> is_a_letter c
@@ -64,7 +57,7 @@ let rec is_valid = fun w ->
 ;;
 
 (* Test de la fonction is_valid : *)
-is_valid hello;;
+let ret_is_valid = is_valid hello;;
 
 (* Question 3 : Fonction to_lower
 
@@ -75,14 +68,14 @@ is_valid hello;;
    @param  w     Le mot à rendre en minuscule.
    @return word  Le mot passé en minuscule.
 *)
-let rec to_lower = fun w ->
+let rec to_lower = fun (w : word) ->
   match w with
-  | []                                  -> []
-  | h::t                                -> Char.lowercase h::to_lower t
+  | []                                  -> ([] : word)
+  | h::t                                -> ((Char.lowercase h::to_lower t) : word)
 ;;
 
 (* Test de la fonction to_lower : *)
-to_lower hello;;
+let ret_to_lower = to_lower hello;;
 
 (* Question 4 : Fonction first_valid_char (Partie 1/2)
 
@@ -93,11 +86,11 @@ to_lower hello;;
    @param  w     Le mot à parcourir.
    @return word  Retourne un mot contenant la première lettre valide trouvée, ainsi que la suite du mot.
 *)
-let rec first_valid_char = fun w ->
+let rec first_valid_char = fun (w : word) ->
   match w with
-  | []       -> []
-  | [h]      -> if is_a_letter h then [h] else []
-  | h::t     -> if is_a_letter h then w else first_valid_char t
+  | []       -> ([] : word)
+  | [h]      -> if is_a_letter h then ([h] : word) else ([] : word)
+  | h::t     -> if is_a_letter h then (w : word) else ((first_valid_char t) : word)
 ;;
 
 (* Question 4 : Fonction trim (Partie 2/2)
@@ -109,18 +102,60 @@ let rec first_valid_char = fun w ->
    @param  w     Le mot à traiter.
    @return word  Retourne le mot avec les caractères, suivant la dernière lettre valide, supprimés.
 *)
-let trim = fun w -> (List.rev (first_valid_char (List.rev w)));;
+let trim = fun (w : word) -> (List.rev ((first_valid_char (List.rev (w : word))) : word));;
 
 (* Définition de quelques variables, qui nous permettront de réaliser divers tests : *)
 let test1 = ['e'; 't'; 'c'; '.'; '.'; '.'];;
 let test2 = ['a'; '.'; 'b'];;
 let test3 = ['a'; '.'; 'b'; '.'; '.'; '.'];;
 let test4 = ['H'; 'e'; 'l'; 'l'; 'o'; ','; ' '; 'n'; 'i'; 'c'; 'e'; ' '; 't'; 'o'; ' '; 'm'; 'e'; 'e'; 't'; ' '; 'y'; 'o'; 'u'; '.'; '.'; '!'];;
+
 (* Test de la fonction trim : *)
-trim test1;;
-trim test2;;
-trim test3;;
-trim test4;;
+let ret_trim1 = trim test1;;
+let ret_trim2 = trim test2;;
+let ret_trim3 = trim test3;;
+let ret_trim4 = trim test4;;
+
+(* handle_file: (in_channel -> 'a) -> string -> 'a *)
+let handle_file = fun f -> fun file ->
+  let input = open_in file in
+  let res = f input in
+  let _ = close_in input in
+  res
+;;
+
+(* my_input_char: in_channel -> char option *)
+let get_char = fun input ->
+  try  Some (input_char input)
+  with End_of_file -> None
+;;
+
+(* update_acc: word -> in_channel -> word *)
+let rec update_acc = fun acc -> fun input ->
+  match get_char input with
+  | None -> acc
+  | Some c -> update_acc (c::acc) input
+ ;;
+
+(* words: char list -> word -> word list -> word list *)
+let rec words = fun l -> fun w -> fun acc ->
+  match l, w with
+  | [], []    -> acc
+  | [], _     -> w :: acc
+  | c::cs, [] -> if (c=' '|| c ='\n' || c ='\t') then words cs [] acc
+                 else words cs [c] acc
+  | c::cs, _  -> if (c=' '|| c ='\n' || c ='\t') then words cs [] (w::acc)
+                 else words cs (c::w) acc
+;;
+
+
+(* get_words: string -> word list *)
+let get_words = fun file ->
+  let lc  = handle_file (update_acc []) file in
+  let lw  = words lc [] [] in
+  let lw' = List.map (fun w -> to_lower (trim w)) lw in
+  List.filter is_valid lw'
+;;
 
 (* === PARTIE 2 : RÉCUPÉRATION DE LA LISTE DES MOTS D'UN FICHIER TEXTE ===
 
@@ -133,7 +168,7 @@ trim test4;;
    @param  w     Le mot à afficher.
    @return unit  Ne retourne rien.
 *)
-let print_word = fun w -> List.iter (Printf.printf "%c") w;;
+let print_word = fun (w : word) -> List.iter (Printf.printf "%c") w;;
 
 (* Question 5 : Fonction print_text (Partie 2/2)
 
@@ -152,7 +187,8 @@ print_word hello;;
 (* Test de la fonction print_text : 
    On commence par récupérer la liste de mots contenue dans le fichier nommé fichier.txt.
 *)
-let text = get_words "fichier.txt";;
+let test_file = "fichier.txt";;
+let text = get_words test_file;;
 
 (* On appelle la fonction print_text, pour afficher chaque mot de la liste. *)
 print_text text;;
@@ -173,7 +209,7 @@ let rec nub = fun l ->
 ;;
 
 (* Test de la fonction nub : *)
-nub hello;;
+let ret_nub = nub hello;;
 
 (* Question 8 : Fonction count_words
 
@@ -195,9 +231,11 @@ let count_words = fun file ->
   (m, n)
 ;;
 
-count_words "fichier.txt";;
-count_words "test.txt";;
+let count_words_fichier_txt = count_words "fichier.txt";;
+let count_words_test_txt = count_words "test.txt";;
+(* Stack_overflow (c'est normal) :
 count_words "lorem.txt";;
+*)
 
 (* === PARTIE 3 : LA STRUCTURE DE TRIE === *)
 module CharMap = Map.Make (Char) ;;
@@ -225,7 +263,7 @@ let example = T (0, CharMap.add 'l' nl (CharMap.add 'u' nu CharMap.empty));;
    @param  t    L'arbre t dans lequel chercher le mot w.
    @return int  La valeur associée au mot w, dans l'arbre t.
 *)
-let rec trie_get = fun w -> fun t ->
+let rec trie_get = fun (w : word) -> fun t ->
   match t with
   | T (x, y)      -> if (List.length w) < 1 then x
                      else
@@ -236,8 +274,8 @@ let rec trie_get = fun w -> fun t ->
 ;;
 
 (* Test de la fonction trie_get : *)
-trie_get ['l'; 'e'; 's'] example;;
-trie_get ['l'; 'e'] example;;
+let trie_get1 = trie_get ['l'; 'e'; 's'] example;;
+let trie_get2 = trie_get ['l'; 'e'] example;;
 
 (* Question 11 : Fonction trie_incr 
 
@@ -249,7 +287,7 @@ trie_get ['l'; 'e'] example;;
    @param  t    L'arbre dans lequel on veut incrémenter la valeur de w.
    @return trie L'arbre avec la nouvelle valeur associée à w.
 *)
-let rec trie_incr = fun w -> fun tr ->
+let rec trie_incr = fun (w : word) -> fun tr ->
   match tr with
   | T (v, m)        -> match w with
 	               | []           -> T (v+1, m)
@@ -263,42 +301,26 @@ let rec trie_incr = fun w -> fun tr ->
 ;;
 
 (* Test de la fonction trie_incr : *)
-trie_get ['l'; 'e'; 's'] example;;
+let test_trie_in1 = trie_get ['l'; 'e'; 's'] example;;
 let newTrie = trie_incr ['l'; 'e'; 's'] example;;
-trie_get ['l'; 'e'; 's'] newTrie;;
+let test_trie_in2 = trie_get ['l'; 'e'; 's'] newTrie;;
 
-(* build_trie : Permet construire un trie au fur et a mesure qu'on lit les mots presents dans input *)
-(* build_trie: trie -> word -> in_channel -> word *)
-let rec build_trie = fun trie -> fun acc -> fun input ->
-  match get_char input with
-  | None -> trie
-  | Some c -> if (c=' '|| c ='\n' || c ='\t') then let acc2 = to_lower (trim (List.rev acc)) in
-                                                                 if is_valid acc2 then let trie2 = trie_incr acc2 trie in build_trie trie2 [] input
-                                                                 else build_trie trie [] input
-              else build_trie trie (c::acc) input
-;;
-
-(* trie_words : Sur la donnee du chemin vers un fichier, renvoie le trie construit a partir des mots de ce fichier. On s'aide du code fourni a section 2 et de la fonction precedente build_trie *)
-(* trie_words : string -> trie *)
-let trie_words = fun file ->
-  let trie_built = handle_file (build_trie empty_trie []) file in
-  trie_built
-;;
 (* Question 12 : Fonction trie_construction
 
-   Cette fonction va nous permettre de parcourir la liste de mots text en entrée, et d'ajouter chaque mots à l'arbre tr.
+   Cette fonction va nous permettre de construire un trie au fur et a mesure qu'on lit les mots présents dans input.
    
-   trie_construction : word list -> trie = <fun>
+   trie_build : trie -> word -> in_channel -> trie = <fun>
    
    @param  text La liste de mots à ajouter à l'arbre tr.
    @return trie L'arbre construit à partir de la liste de mots.
 *)
-let rec trie_construction = fun text -> fun tr ->
-  match text with
-  | []       -> trie_incr [] tr
-  | h::t     -> let tr' = trie_incr h tr in
-      		    let final_trie = trie_construction t tr' in
-		        final_trie
+let rec trie_build = fun trie -> fun (acc : word) -> fun input ->
+  match get_char input with
+  | None -> trie
+  | Some c -> if (c=' '|| c ='\n' || c ='\t') then let acc2 = to_lower (trim (List.rev acc)) in
+                                                                 if is_valid acc2 then let trie2 = trie_incr acc2 trie in trie_build trie2 [] input
+                                                                 else trie_build trie [] input
+              else trie_build trie (c::acc) input
 ;;
 
 (* Question 12 : Fonction trie_words
@@ -310,16 +332,14 @@ let rec trie_construction = fun text -> fun tr ->
    @param  s    La chaîne de caractères correspondant au chemin du fichier à lire.
    @return trie L'arbre construite à partir des mots du fichier donné en entrée.
 *)
-let trie_words = fun s ->
-  let text       = get_words s in
-  let empty_trie = T (0, CharMap.empty) in
-  let trie_built = trie_construction text empty_trie in
+let trie_words = fun file ->
+  let trie_built = handle_file (trie_build empty_trie []) file in
   trie_built
 ;;
 
 (* Test de la fonction trie_words : *)
 let test_trie_words = trie_words "fichier.txt";;
-trie_get ['l'; 'e'] test_trie_words;;
+let test_trie_w1 = trie_get ['l'; 'e'] test_trie_words;;
 
 (* Question 13 : Fonction trie_card
 
@@ -339,9 +359,9 @@ let rec trie_card = fun tr ->
 ;;
 
 (* Test de la fonction trie_card : *)
-trie_card test_trie_words;;
+let test_trie_card1 = trie_card test_trie_words;;
 trie_get ['c'; 'o'; 'd'; 'e'] test_trie_words;; 
-trie_card example;;
+let test_trie_card2 = trie_card example;;
 
 (* Question 14 : Fonction trie_sum
 
@@ -358,7 +378,7 @@ let rec trie_sum = fun tr ->
 ;;
 
 (* Test de la fonction trie_sum : *)
-trie_sum example;;
+let test_trie_sum = trie_sum example;;
 
 (* Question 15 : Fonction count_words_v2 
    
@@ -381,7 +401,7 @@ let count_words_v2 = fun f ->
 ;;
 
 (* Test de la fonction count_words_v2 : *)
-count_words_v2 "lorem.txt";;
+let test_count_words_v2 = count_words_v2 "lorem.txt";;
 
 (* Question 16 : Fonction trie_longer_word (Question N°3 de l'introduction)
 
@@ -403,10 +423,10 @@ let rec trie_longer_word = fun tr ->
 ;;
 
 (* Test de la fonction trie_longer_word : *)
-trie_longer_word example;;
+let longer_word_test1 = trie_longer_word example;;
 let newTrie = trie_incr ['l'; 'e'; 's'; 's'] example;;
 trie_get ['l'; 'e'; 's'] newTrie;;
-trie_longer_word newTrie;;
+let longer_word_test2 = trie_longer_word newTrie;;
 
 (* Question 16 : Fonction trie_most_used_word (Question N°4 de l'introduction)
 
@@ -428,7 +448,7 @@ let rec trie_most_used_word = fun tr ->
 ;;
 
 (* Test de la fonction trie_most_used_word : *)
-trie_most_used_word example;;
+let test_most_used = trie_most_used_word example;;
 trie_get ['l'; 'e'; 's'] example;;
 let newTrie = trie_incr ['l'; 'e'; 's'] example;;
 trie_get ['l'; 'e'; 's'] newTrie;;
@@ -454,7 +474,7 @@ trie_most_used_word trieLA;;
    @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
    @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots constitués d'au moins n lettres.
 *)
-let rec trie_search_words_n_letters = fun tr -> fun n -> fun wordsAlreadySeen -> fun currentWord ->
+let rec trie_search_words_n_letters = fun tr -> fun n -> fun wordsAlreadySeen -> fun (currentWord : word) ->
 	match tr with
 	| T (v, m)               -> if CharMap.is_empty m then 
                                   if (List.length currentWord) >= n && v > 0 then List.rev (currentWord)::wordsAlreadySeen 
@@ -477,7 +497,7 @@ let rec trie_search_words_n_letters = fun tr -> fun n -> fun wordsAlreadySeen ->
 let trie_words_more_n_letters = fun tr -> fun n -> trie_search_words_n_letters tr n [] [];;
 
 (* Test de la fonction trie_words_more_n_letters : *)
-trie_words_more_n_letters trieLA 2;;
+let words_more_n_let = trie_words_more_n_letters trieLA 2;;
 
 (* Question 16 : Fonction trie_search_words_k_repeat (Question N°6 de l'introduction, partie 1/2)
 
@@ -491,7 +511,7 @@ trie_words_more_n_letters trieLA 2;;
    @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
    @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots répétés au moins k fois.
 *)
-let rec trie_search_words_k_repeat = fun tr -> fun k -> fun wordsAlreadySeen -> fun currentWord ->
+let rec trie_search_words_k_repeat = fun tr -> fun k -> fun wordsAlreadySeen -> fun (currentWord : word) ->
 	match tr with
 	| T (v, m)               -> if CharMap.is_empty m then 
                                   if v >= k && v > 0 then (List.rev currentWord)::wordsAlreadySeen 
@@ -514,7 +534,7 @@ let rec trie_search_words_k_repeat = fun tr -> fun k -> fun wordsAlreadySeen -> 
 let trie_words_k_repeat = fun tr -> fun k -> trie_search_words_k_repeat tr k [] [];;
 
 (* Test de la fonction trie_words_k_repeat : *)
-trie_words_k_repeat trieLA 2;;
+let words_more_k_rep = trie_words_k_repeat trieLA 2;;
 
 (* Question 16 : Fonction trie_search_words_with_prefix (Question N°7 de l'introduction, partie 1/2)
 
@@ -528,7 +548,7 @@ trie_words_k_repeat trieLA 2;;
    @param   currentWord       Le mot courrant, incluant toutes les lettres rencontrées depuis la racine, jusqu'au noeud en cours.
    @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots composés du préfixe donné en paramètre.
 *)
-let rec trie_search_words_with_prefix = fun tr -> fun prefix -> fun wordsAlreadySeen -> fun currentWord ->
+let rec trie_search_words_with_prefix = fun tr -> fun (prefix : word) -> fun wordsAlreadySeen -> fun (currentWord : word) ->
 	match tr with
 	| T (v, m)               -> if CharMap.is_empty m then 
                                   if ((List.length prefix) = 0 && v > 0) then (List.rev currentWord)::wordsAlreadySeen 
@@ -552,7 +572,173 @@ let rec trie_search_words_with_prefix = fun tr -> fun prefix -> fun wordsAlready
    @param   prefix            Le préfixe qui doit composer le mot, pour que le mot fasse partie de la liste que l'on renvoie.
    @return  word list         La liste de mots renvoyée à la fin, qui compte tous les mots composés du préfixe donné en paramètre.
 *)
-let trie_words_with_prefix = fun tr -> fun prefix -> trie_search_words_with_prefix tr prefix [] [];;
+let trie_words_with_prefix = fun tr -> fun (prefix : word) -> trie_search_words_with_prefix tr prefix [] [];;
 
 (* Test de la fonction trie_words_with_prefix : *)
-trie_words_with_prefix trieLA ['l'; 'e'];;
+let words_more_prefix = trie_words_with_prefix trieLA ['l'; 'e'];;
+
+
+
+(*
+   ============================== ATTENTION ==============================
+   |                                                                     |
+   |                                                                     |
+   |                                                                     |
+   |             Cette partie est réservée au projet compilé.            |
+   |    Il n'y a que des Printf, qui affichent les résultats des tests   |
+   | Si vous utilisez l'interpréteur, cette partie ne vous sera d'aucune |
+   |                               Utilité.                              |
+   |                                                                     |
+   |                                                                     |
+   ============================== ATTENTION ==============================
+*)
+let print_couple_int_int = fun c ->
+	match c with
+	(x, y) -> Printf.printf "(%d, %d)" x y
+;;
+
+let print_couple_word = fun c ->
+	match c with
+	(x, y) -> print_word x
+;;
+
+let print_couple_int = fun c ->
+	match c with
+	(x, y) -> Printf.printf "%d" y
+;;
+
+
+Printf.printf "\n\nDéfinition de quelques variables de tests, affichons leurs valeurs :\n";;
+Printf.printf "Variable hello : ";;
+print_word hello;;
+Printf.printf "\nVariable car1  : %c\n" car1;;
+Printf.printf "Variable car2  : %c\n" car2;;
+Printf.printf "Variable car3  : %c\n" car3;;
+Printf.printf "Variable car4  : %c\n" car4;;
+Printf.printf "Variable car5  : %c\n\n" car5;;
+
+
+Printf.printf "Tests de la fonction is_a_letter :\n";;
+Printf.printf "is_a_letter car1 : %b\n" ret1;;
+Printf.printf "is_a_letter car2 : %b\n" ret2;;
+Printf.printf "is_a_letter car3 : %b\n" ret3;;
+Printf.printf "is_a_letter car4 : %b\n" ret4;;
+Printf.printf "is_a_letter car5 : %b\n\n" ret5;;
+
+
+Printf.printf "Tests de la fonction is_valid :\n";;
+Printf.printf "is_valid hello : %b\n\n" ret_is_valid;;
+
+
+Printf.printf "Tests de la fonction to_lower :\n";;
+Printf.printf "to_lower hello : ";;
+print_word hello;;
+
+
+Printf.printf "\n\nDéfinition de quelques variables de tests, affichons leurs valeurs :\n";;
+Printf.printf "Variable test1 : ";;
+print_word test1;;
+Printf.printf "\nVariable test2 : ";;
+print_word test2;;
+Printf.printf "\nVariable test3 : ";;
+print_word test3;;
+Printf.printf "\nVariable test4 : ";;
+print_word test4;;
+
+
+Printf.printf "\n\nTests de la fonction trim :\n";;
+Printf.printf "trim test1 : ";;
+print_word ret_trim1;;
+Printf.printf "\ntrim test2 : ";;
+print_word ret_trim2;;
+Printf.printf "\ntrim test3 : ";;
+print_word ret_trim3;;
+Printf.printf "\ntrim test4 : ";;
+print_word ret_trim4;;
+
+
+Printf.printf "\n\nTest de la fonction print_word, en affichant la variable hello :\n";;
+print_word hello;;
+
+
+Printf.printf "\n\nTest de la fonction print_text, en affichant le contenu du fichier %s :\n" test_file;;
+print_text text;;
+
+
+Printf.printf "\n\nTest de la fonction nub, en utilisant la variable hello :\n";;
+Printf.printf "nub hello : ";;
+print_word ret_nub;;
+
+Printf.printf "\n\nTest de la fonction count_words, en lui passant des fichier en paramètre :\n";;
+Printf.printf "\n\nRappel, cette fonction renvoie un couple d'entiers (m, n) :\n";;
+Printf.printf "            * m est le nombre de mots valides dans le fichier,\n";;	   
+Printf.printf "            * n est le nombre de mots valides différents dans le fichier.\n";;
+Printf.printf "count_words \"fichier.txt\" : ";;
+print_couple_int_int count_words_fichier_txt;;
+Printf.printf "\ncount_words \"test.txt\" : ";;
+print_couple_int_int count_words_test_txt;;
+
+Printf.printf "\n\nTest de la fonction trie_get, le résultat correspond au nombre de fois qu'un mot apparaît dans un texte :\n";;
+Printf.printf "trie_get ['l'; 'e'; 's'] example : %d\n" trie_get1;;
+Printf.printf "trie_get ['l'; 'e'] example      : %d\n" trie_get2;;
+
+
+Printf.printf "\n\nTest de la fonction trie_inc, qui nous permet d'incrémenter le nombre d'occurence d'un mot :\n";;
+Printf.printf "trie_get ['l'; 'e'; 's'] example : %d\n" test_trie_in1;;
+Printf.printf "trie_get ['l'; 'e'; 's'] newTrie : %d\n" test_trie_in2;;
+
+
+Printf.printf "\n\nTest de la fonction trie_words, qui permet de construire un trie depuis le texte d'un fichier :\n";;
+Printf.printf "trie_get ['l'; 'e'] test_trie_words : %d\n" test_trie_w1;;
+
+
+Printf.printf "\n\nTest de la fonction trie_card, qui compte le nombre de noeuds qui ont une valeur non nulle dans un trie donné :\n";;
+Printf.printf "trie_card test_trie_words : %d\n" test_trie_card1;;
+Printf.printf "trie_card example         : %d\n" test_trie_card2;;
+
+
+Printf.printf "\n\nTest de la fonction trie_sum, qui retourne la somme des valeurs contenues dans les noeuds d'un trie donné :\n";;
+Printf.printf "trie_sum example : %d\n" test_trie_sum;;
+
+Printf.printf "\n\nTest de la fonction count_words_v2, en lui passant des fichier en paramètre :\n";;
+Printf.printf "count_words_v2 \"lorem.txt\" : ";;
+print_couple_int_int test_count_words_v2;;
+
+
+Printf.printf "\n\nTest de la fonction trie_longer_word, le premier élément étant le mot le plus long, et le deuxième, sa taille :\n";;
+Printf.printf "trie_longer_word example : ";;
+Printf.printf "(";;
+print_couple_word longer_word_test1;;
+Printf.printf ", ";;
+print_couple_int longer_word_test1;;
+Printf.printf ")\n";;
+Printf.printf "trie_longer_word newTrie : ";;
+Printf.printf "(";;
+print_couple_word longer_word_test2;;
+Printf.printf ", ";;
+print_couple_int longer_word_test2;;
+Printf.printf ")";;
+
+
+Printf.printf "\n\nTest de la fonction trie_most_used_word, le premier élément étant le mot le plus utilisé, et le deuxième, son nombre d'occurences :\n";;
+Printf.printf "trie_most_used_word example : ";;
+Printf.printf "(";;
+print_couple_word test_most_used;;
+Printf.printf ", ";;
+print_couple_int test_most_used;;
+Printf.printf ")";;
+
+
+Printf.printf "\n\nTest de la fonction trie_words_more_n_letters, qui retourne la liste de mots d'au moins n lettres :\n";;
+Printf.printf "trie_words_more_n_letters trieLA 2 : \n";;
+print_text words_more_n_let;;
+
+
+Printf.printf "\n\nTest de la fonction trie_words_k_repeat, qui retourne la liste de mots répétés au moins k fois :\n";;
+Printf.printf "trie_words_k_repeat trieLA 2 : \n";;
+print_text words_more_k_rep;;
+
+
+Printf.printf "\n\nTest de la fonction trie_words_with_prefix, qui retourne la liste de mots commençant par un préfixe donné :\n";;
+Printf.printf "trie_words_with_prefix trieLA ['l'; 'e'] : \n";;
+print_text words_more_prefix;;

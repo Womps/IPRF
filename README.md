@@ -17,6 +17,7 @@ Vous pouvez utiliser la commande `make` pour générer l'exécutable.
 
 Pour essayer le code que vous aurez compilé, vous trouverez l'exécutable dans le répertoire `test`
 Dans ce répertoire se trouvent aussi les différents fichiers textes que j'utilise pour tester mes fonctions.
+Il faut se placer dans le répertoire test, quand on exécute le binaire, sinon il ne trouvera pas les fichiers .txt utilisés pour réaliser les tests.
 
 ## Arborescence du projet
 
