@@ -305,7 +305,7 @@ let test_trie_in1 = trie_get ['l'; 'e'; 's'] example;;
 let newTrie = trie_incr ['l'; 'e'; 's'] example;;
 let test_trie_in2 = trie_get ['l'; 'e'; 's'] newTrie;;
 
-(* Question 12 : Fonction trie_construction
+(* Question 12 : Fonction trie_build
 
    Cette fonction va nous permettre de construire un trie au fur et a mesure qu'on lit les mots présents dans input.
    
