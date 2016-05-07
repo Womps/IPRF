@@ -1,0 +1,211 @@
+\documentclass[a4paper, title page, 12pt]{report}
+
+\usepackage[latin1]{inputenc} % permet d'écrire des caractères accentués et autres trucs direct
+\usepackage[T1]{fontenc} % norme T1 LaTeX
+\usepackage[francais]{babel} % renommage français
+\usepackage{graphicx} % permet l'insertion d'image
+\usepackage{geometry} % permet le redimensionnement plus pratique de la page ou la mise en "landscape" (paysage) d'une feuille
+\usepackage{lscape}
+\usepackage{soulutf8}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage[final]{pdfpages} 
+\usepackage[toc,page]{appendix}
+\definecolor{Zgris}{rgb}{0.87,0.85,0.85}
+
+\newsavebox{\BBbox}
+\newenvironment{DDbox}[1]{\begin{lrbox}{\BBbox}\begin{minipage}{\linewidth}}
+    {\end{minipage}\end{lrbox}\noindent\colorbox{Zgris}{\usebox{\BBbox}} \\
+    [.5cm]}
+
+% si lien dynamique html
+\usepackage[unicode]{hyperref}
+\usepackage{url}
+\hypersetup{colorlinks,citecolor=black,filecolor=black,linkcolor=black,urlcolor=black}
+
+
+
+% package et définitions des en-têtes et pieds-de-page
+	\usepackage{lastpage}
+	\usepackage{fancyhdr}
+	\pagestyle{fancy}
+	\renewcommand{\headrulewidth}{1pt}
+	\fancyhead[L]{\leftmark}
+	\fancyhead[C]{}
+	\fancyhead[R]{}
+	\renewcommand{\footrulewidth}{1pt}
+	\fancyfoot[C]{ÉCOLE NATIONALE SUPÉRIEURE D'INFORMATIQUE POUR L'INDUSTRIE ET L'ENTREPRISE \\ 1,  square de la résistance 91025 ÉVRY - http://www.ensiie.fr/ \\ 		\textbf{Page \thepage/\pageref{LastPage}}}
+
+
+\makeatletter
+\let\ps@plain=\ps@fancy
+\makeatother
+% des trucs pas très utiles pour ce document mais quand même !
+	\title{Rapport d'activité}
+	\author{Romain EPIARD}
+	\date{}
+	
+	\begin {document}
+	% première page
+		\input{premierePage.tex}
+		
+	\setcounter{page}{1}
+	\newpage
+
+% table des matières
+	\tableofcontents
+	\newpage
+	% Introduction
+	\section*{Introduction}
+	Dans le cadre de notre formation d'ingénieur par alternance, nous devons faire un compte-rendu de ce que nous avons fait à l'Entreprise pendant l'année. Cette année à l'entreprise, j'ai commencé par assimiler beaucoup de choses sur le fonctionnement du S.I de Orange, en faisant d'abord de l'exploitation et de la production. C'est-à dire, en traitant les différents incidents, les différentes alarmes qui apparaissent. J'ai appris à utiliser les applications qui nous servent à surveiller les alarmes, à ordonnancer les tâches sur le serveur... Ensuite, j'ai participé au transfert d'une application. Puis j'ai participé à un gros projet d'automatisation, qui s'appelle l'industrialisation des maintenances. Je vais d'abord vous présenter l'entreprise, puis, je vous présenterai tous les travaux que j'ai réalisés cette année.
+	\newpage
+	\chapter{Présentation de l'Entreprise}
+	\section{Orange, dans sa globalité}
+	Orange, anciennement France-Télécom, fait partie des opérateurs de télécommunication, parmi les plus importants au monde. L'entreprise compte plus de 247 millions de clients à travers le monde, pour un chiffre d'affaire de près de 39,4 milliards d'euros. Le groupe compte 155 000 employés, dont 98 000 en France. Les abonnés du réseau Orange sont répartis dans 30 pays différents, mais le réseau est accessible depuis 220 pays et territoires.\\ \\
+	Enfin, Orange est également l'une des entreprises leaders au niveau mondial, pour les services de communication aux entreprises et aux multinationales, à travers Orange Business Services.
+	\begin{figure}[!h]
+	\begin{center}
+	\includegraphics[width=15cm, height=6cm]{img/orange_dans_le_monde.png}
+	\caption{Présence d'Orange dans le monde}
+	\end{center}
+	\end{figure}
+	
+	\newpage
+	\section{Historique de l'Entreprise}
+	Historiquement, le groupe ne s'appelait pas Orange. C'est en août 2000, que France-Télécom décide de racheter Orange à Vodafone, pour un coût total qui est estimé à 39,7 milliards d'euros. Orange devient alors une filiale de France-Télécom, qui commercialise des services comme la téléphonie mobile, l'accès à Internet, la téléphonie IP, la télévision par ADSL et la télévision par satellite.\\
+	
+	Voici quelques dates clés de l'évolution du groupe:
+	\begin{itemize}
+		 \item 1991 : Le 1\up{er} janvier 1991, la Direction Générale des Télécommunications devient France Télécom,
+		 \item 1994 : Le lancement d'Orange au Royaume-Uni,
+		 \item 1996 : La transformation en SA,
+		 \item 2000 : L'acquisition d'Orange par France Télécom,
+		 \item 2004 : La privatisation de France Télécom,
+		 \item 2010 : Le lancement du projet conquêtes 2015,
+		 \item 2012 : Lancement de la 4G dans 8 pays,
+		 \item 2013 : Le groupe devient Orange.
+	\end{itemize}
+	\section{Situation de mon équipe dans l'organigramme}
+	Passons maintenant à la présentation de son organisation. En partant du président directeur général, Stéphane RICHARD, jusqu'à mon équipe.\\
+
+	\begin{figure}[!h]
+	\begin{center}
+	\includegraphics[width=3cm, height=6cm]{img/entites.png}
+	\caption{Situation de mon équipe}
+	\end{center}
+	\end{figure}
+
+L'entité Orange, dirigée par Stéphane RICHARD, inclut l'entité Orange France. Cette dernière comprend toutes les directions, qui travaillent pour la France. Même si certaines d'entre-elles peuvent aussi travailler pour l'international. Dans Orange France, on trouve notamment les différentes unités d'intervention, réparties par régions, qui comprennent tous les services et toutes les personnes, qui entrent dans la chaîne de production ou de maintenance d'une liaison internet ou téléphone. Ce sont donc toutes les directions techniques et non techniques, qui travaillent essentiellement pour le périmètre France, qui sont comprises dans Orange France. La direction technique et du système d'information (D.T.S.I.) est aussi comprise dans Orange France.\\
+\\
+La direction technique et du système d'information comprend tous les services et les directions qui concernent  le système d'information, dont la direction dans laquelle je me trouve. On peut y trouver notamment les directions qui s'occupent de la sécurité informatique, la direction qui gère l'infrastructure du réseau, celle qui gère les moyens informatiques mis à disposition des employés. Dans cette direction se trouve la direction de l'exploitation du système d'information (D.E.S.I).\\
+\\
+Au sein de la D.E.S.I, on retrouve toutes les directions d'exploitation du système d'information, avec par exemple la supervision et l'exploitation qui comprennent les personnes qui veillent au bon fonctionnement du S.I, les services qui s'occupent de l'accès au S.I, en donnant par exemple les accès pour une application à une personne.\\
+\\
+Dans la direction de l'exploitation du système d'information, on retrouve tous les services qui veillent au bon fonctionnement du S.I d'Orange, que ce soit interne, en veillant au bon fonctionnement, et en rétablissant les applications qui pourraient se bloquer, et qui permettent aux employés d'Orange de travailler. Le S.I externe d'Orange est aussi surveillé dans ces services, par exemple le cloud d'Orange. Cette direction, qui comprend tous les services de surveillance, c'est la Direction de Domaine Supervision et Exploitation (D.D.S.E).\\
+\\
+Chez Orange, il y a plusieurs centaines d'applications réparties sur plusieurs milliers de serveurs. Pour pouvoir surveiller toutes ces machines, il y a plusieurs départements d'exploitation, et de supervision, qui surveillent 24h / 24, 7j / 7, toutes les applications et les machines du groupe. C'est dans la D.D.S.E qu'on retrouve ces départements d'exploitation. Le mien est le département d'exploitation numéro 3 (D.E.X.3).
+\newpage
+Dans la D.E.X.3, se trouvent plusieurs équipes, la mienne est l'équipe exploitation ressources et réseaux (E.X.R.R). Une des équipes qui surveille le système d'information d'Orange et qui intervient en cas de problème. 
+
+	\chapter{Ma mission en Entreprise}
+	\section{Exploitation et Production}
+	Comme expliqué dans la présentation de mon service, nous faisons partie d'une chaîne de soutien. Cette équipe intervient en deuxième recours dans le processus incident. Avant nous, se trouve le service de la supervision (ou N0 pour niveau 0), qui eux, peuvent voir toutes les alarmes qui  apparaissent au sein du S.I. Ils ont plusieurs milliers de serveurs qui peuvent générer des alarmes. Une fois qu'ils récupèrent une alarme, ils essaient de régler l'incident, lorsque ce sont des incidents basiques. Ensuite, si la supervision n'arrive pas à régler le problème, c'est à un des Départements d'exploitation (D.E.X), qu'ils renvoient l'alarme. En effet, chaque département d'exploitation a ce qu'on appelle un \og{}périmètre applicatif\fg{}. Ce périmètre est en fait un certain nombre d'applications (sachant qu'une application peut travailler sur plusieurs serveurs), que l'on a attribué à un D.E.X. Si le département d'exploitation (N1, pour niveau 1) ne peut pas résoudre le problème, on redirige le problème vers les domaines (N2). Après les domaines, se trouvent les M.O.E pour maîtrises d'\oe{}uvre (N3). Ce sont les personnes qui ont développé l'application, et qui eux, peuvent intervenir sur tout le périmètre de l'application incidentée.
+	\begin{figure}[!h]
+	\leftskip -0.2cm{
+	\includegraphics{img/chaine_soutien.png}
+	\caption{Niveaux de la chaine de soutien}
+	}
+	\end{figure}
+	\newpage
+	Pendant cette année, j'ai notamment réalisé le traitement de petits incidents, en parallèle des projets transverses sur lesquels je travaille. Les petits incidents sont souvent anodins, dans le sens où, cela peut être des messages d'erreurs qui peuvent apparaître dans les logs, ou encore une surcharge momentanée du processeur, lors d'un traitement. Pour traiter ces petits incidents, j'ai utilisé les outils que l'on nous fournit dans le SI, qui nous permettent de nous connecter aux machines. On peut accéder à l'agent qui surveille la machine, voir les traitements en erreur, les messages d'erreurs remontés... Une fois connecté à la machine, j'analysais, j'essayais de comprendre pourquoi on a eu cette erreur. Après avoir trouvé pourquoi, je vérifiais que le traitement incidenté soit bien repassé une deuxième fois, sans erreur cette fois-ci. Enfin, je pouvais clore l'incident, en retournant dans l'outil qui nous permet de gérer les différents incidents, j'ajoutais un commentaire pour expliquer pourquoi il y a eu ce problème et ce que j'ai fais pour le résoudre. Lorsque je ne pouvais pas résoudre l'incident tout seul, j'étais amené à travailler avec les personnes des autres niveaux de la chaîne de soutien.\\
+	\\
+	J'ai aussi réalisé une tâche d'exploitation, que l'on appelle \og{}DRP\fg{}, pour Disaster Recovery Program. C'est une tâche d'exploitation que nous réalisons dans des conditions d'incidents très graves, comme par exemple un Data Center qui n'est plus joignable, alors, ce \og{}DRP\fg{} nous permet de basculer l'application sur d'autres serveurs (par forcément sur le même Data Center).
+	Cependant, j'ai réalisé cette tâche d'exploitation dans des conditions spéciales, pour tester justement, que tout était réalisable. C'est sur une application dont je m'occupe de réaliser le transfert vers mon équipe, car c'est une application qui n'était pas dans notre périmètre, mais qui va le devenir.
+	
+	\section{Transfert d'application : ORMIS}
+	Quelques mois après mon arrivée, on m'a proposé de m'occuper du suivi du transfert d'une application vers notre Département d'exploitation. ORMIS, pour \textbf{OR}ange \textbf{M}ulti-canal \textbf{I}nformation \textbf{S}ervice est une application qui permet de gérer les campagnes de mail, SMS, MMS, ainsi que WP (pour WapPush). Grâce à cette application, on peut donc envoyer que ce soit en interne ou en externe des campagnes vers n'importe quel abonné Orange. En chiffres, on peut envoyer jusqu'à 5,5 millions de SMS et 1,7 millions de mails par jour. J'ai accepté de m'occuper du suivi, car cela me permet d'être en contact avec des personnes d'autres services de Orange, et de comprendre comment on met une application en place. Aussi, cela m'a aidé à assimiler plus facilement l'architecture, les logiciels utilisés, pour faire fonctionner les applications et les faire communiquer entre elles.
+	\begin{figure}[!h]
+	\begin{center}
+	\includegraphics[width=10cm, height=10cm]{img/ORMIS.PNG}
+	\caption{Page d'accueil ORMIS}
+	\end{center}
+	\end{figure} \\ \\ 
+J'ai donc participé à beaucoup de réunions, pendant le transfert. Car pour chaque application, nous avons ce qu'on appelle des \og{}FEX\fg{}, pour Fiches d'Exploitation. Ces \og{}FEX\fg{} sont utilisées par chaque département d'exploitation, pour résoudre les incidents. Ce sont en quelques sorte des procédures à suivre pour faire une manipulation particulière. Ces \og{}FEX\fg{} sont réalisées par les personnes qui développent l'application. Et il fallait quelqu'un dans le département d'exploitation, pour vérifier que nous avions toutes les fiches dont nous avions besoin. Il a aussi fallut que j'intervienne pour déterminer si l'application devait faire partie de la liste des applications d'astreinte (applications pour lesquelles la personne d'astreinte peut être appelée n'importe quand). Pour ce transfert, j'ai été amené à dérouler la procédure de la fiche \og{}DRP\fg{}, comme je l'ai expliqué plus haut, pour tester qu'elle serait opérationnelle dans des conditions d'urgence et que toutes les informations utiles sont présentes.
+
+\section{Projet d'automatisation}
+\subsection{Plages de maintenances}
+J'ai aussi en parallèle à tout ça travaillé sur un gros projet, qui est l'automatisation des maintenances. Un projet à l'initiative de mon tuteur, Azeddine BENDAOUD. Pour que les OS des serveurs restent stables, nous devons redémarrer la machine suivant un intervalle régulier. Pour l'instant, toute la manipulation est faite à la main. Le problème est qu'il y a plusieurs milliers de serveurs... Et donc ça peut prendre un certain temps de tous les redémarrer. C'est pourquoi il y a un gros projet actuellement, qui est d'automatiser notamment les redémarrages, mais aussi toutes les mises à jours. Dans un premier temps j'ai travaillé sur les plages de maintenances. Ces plages de maintenances sont des moments précis, pendant lesquels une ou plusieurs machines doivent redémarrer. Par exemple, pour la plage numéro 1, tous les serveurs se trouvant dans cette plage redémarreront tout les premiers dimanche de chaque mois. J'ai donc participé à l'organisation des plages pour les serveurs de notre équipe, pour définir les plages de chaque serveur.
+	\begin{figure}[!ht]
+	\begin{center}
+	\includegraphics[width=10cm, height=10cm]{img/Plages_maintenances.PNG}
+	\caption{Automatisation et plages de maintenances de 1 à 5}
+	\end{center}
+	\end{figure}
+	
+	Le problème est que nous nous sommes aperçus que certaines équipes mettaient leurs plages de maintenances un peu n'importe quand. De ce fait, les plages ne servaient plus à rien. Mais on en avait quand même besoin, pour ne serait-ce qu'avoir l'information. Par exemple quand un serveur ne répond plus, la première chose à vérifier est de regarder si il est en train de redémarrer, ou pas. C'est pourquoi on a décidé de ne plus garder les plages 1, 2, 3 et 4, qui étaient respectivement pour le 1\up{er}, 2\up{ème}, 3\up{ème} et 4\up{ème} dimanche du mois. On a finalement gardé que la dernière, avec un format bien particulier, mais de cette façon, chaque équipe peut faire redémarrer chacun de ses serveur quand elle le veut.
+	
+	\begin{figure}[!h]
+	\begin{center}
+	\includegraphics[width=10cm, height=10cm]{img/Plages_maintenances_v2.PNG}
+	\caption{Automatisation et plage de maintenance avec 1 seule plage}
+	\end{center}
+	\end{figure}
+	
+	\subsection{Pré-requis redémarrage}
+	Ensuite, je suis passé sur une partie un peu plus technique du projet d'industrialisation des maintenances. Avant de redémarrer une machine, il y a un certain nombre de points que l'on doit vérifier. La vérification des FileSystems, et divers autres critères sont des points très importants pour être sûrs que la machine va bien redémarrer. 
+		\begin{figure}[!h]
+		\begin{center}
+	\includegraphics[width=15cm, height=10cm]{img/pre-requis.PNG}
+	\caption{Pré-requis reboot}
+	\end{center}
+	\end{figure}
+	
+	J'ai participé au développement de la partie pré-requis système reboot, correspondant au Check OS, sur logigramme précédent. C'est un programme en langage Perl, orienté objet, que l'on exécute sur toutes les machines Unix, avant redémarrage. Pour ma part, je me suis occupé du développement de ces pré-requis, sur les machines sous l'OS AIX. Pour le développement de cette partie, j'ai été aidé par deux administrateurs systèmes, dont un qui était expert AIX. Après avoir finit le développement de cette partie pré-requis reboot, sur les machines AIX, je suis passé avec un des administrateurs systèmes, sur le programme de pré-requis général. Pour le développement, on a utilisé une méthode de gestion de projet nommée SCRUM, qui fait partie des méthodes AGILE. Vous pourrez trouver en annex 2 le tableau des tâches que l'on a réalisées. On a aussi fait la rétro-conception du code, vers un diagramme de classes UML. Nous avons voulu faire ça, car nous voulions savoir si on ne pouvait pas optimiser notre programme, sauf que quand ils ont développé le programme, ils sont partis de rien, et n'avaient par conséquent pas fait de conception. C'est pourquoi, j'ai fait le diagramme de classes et de séquences du programme entier, contenant les parties pour Linux, AIX, HPUX et Solaris.
+	
+	\subsection{Reboot pour Windows}
+	Enfin, la dernière tâche qui m'a été confiée était le script de reboot pour les machines sur Windows. C'est une petite partie du grand projet d'industrialisation de maintenances, vous trouverez le logigramme complet en annexe 1, mais pour vous situer à quel moment entre en compte ce script de reboot sous Windows, voici un bout du logigramme complet.
+		\begin{figure}[!h]
+		\begin{center}
+	\includegraphics[height=10cm]{img/reboot_Windows.PNG}
+	\caption{Situation du script de reboot pour Windows}
+	\end{center}
+	\end{figure}
+	
+	Avant de commencer mon script, j'ai fait un peu de conception, j'ai commencé par spécifier chaque fonction que je comptais écrire, et j'ai écrit un logigramme, que vous trouverez en annexe 3, pour savoir un peu ce que j'allais faire de ces fonctions. Au début, je pensais que j'allais devoir développer un script en DOS-Shell. Mais au sein d'Orange, nous utilisons un outil, nommé BladeLogic, développé par BMC Software. Cet outil m'a beaucoup aidé, car j'ai pu développer un script entièrement en shell unix, et plus précisément, en version NSH (se rapprochant sensiblement sur KSH). En effet, Bladelogic possède un agent sur chaque serveur, et cet agent permet d'exécuter des script unix, même sur les machines Windows, car il possède son propre interpréteur de commandes.
+	
+	\section*{Conclusion}
+	Cette année s'est très bien passée. J'ai eu pas mal de travail à l'entreprise, et du travail intéressant. Pour moi, un ingénieur fait de la technique, mais pas que ça. Avant de faire de la technique, il conçoit ce qu'il va faire, il réfléchit à pourquoi faire ça, qu'est-ce que ça va apporter, comment le faire, la meilleure façon de le faire. Et quand il lance un projet, il le gère, il gère le temps de travail et la charge de travail de lui-même et de ses collaborateurs. C'est pour moi la part la plus importante du travail d'un ingénieur. Et cette année j'ai pu voir toute ces facettes du travail d'un ingénieur. Cette année a été très enrichissante et m'a permis d'apprendre beaucoup sur le travail d'un ingénieur.
+	% ANNEXES 
+\renewcommand{\appendixname}{Annexes}
+\appendix
+
+\begin{appendices}
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[height=20cm]{img/Reboot_simple.png}
+\caption{Annexe 1 - Logigramme du projet d'industrialisation des maintenances}
+\end{center}
+\end{figure}
+\newpage
+\begin{figure}[!h]
+	\leftskip -2.8cm{
+\includegraphics[width=20cm]{img/taches_pre-requis.PNG}
+\caption{Annexe 2 - Tâches pour le développement des pré-requis AIX}
+}
+\end{figure}
+\newpage
+\begin{figure}[!h]
+	\leftskip -2.8cm{
+\includegraphics[width=20cm]{img/logigramme_Reboot_Windows.png}
+\caption{Annexe 3 - Logigramme de la partie reboot Windows}
+}
+\end{figure}
+\pagebreak
+
+\end{appendices}
+	\end{document}
