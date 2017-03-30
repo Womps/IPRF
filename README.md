@@ -27,7 +27,7 @@ Il faut se placer dans le répertoire test, quand on exécute le binaire, sinon 
  ./Makefile
  ./src/*.ml;*.mli
  ./_build/*.cmo;*.cmi
- ./test/IPRF_Analyseur_De_Texte_Romain_EPIARD;*.txt
+ ./test/IPRF_Analyseur_De_Texte;*.txt
 ```
 
 ## Auteur
