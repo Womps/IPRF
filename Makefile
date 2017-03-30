@@ -3,7 +3,7 @@ CAMLC =ocamlc
 SRCDIR   = src
 OBJDIR   = _build
 BINDIR   = test
-TARGET   = IPRF_Analyseur_De_Texte_Romain_EPIARD
+TARGET   = IPRF_Analyseur_De_Texte
 
 OCAMLCFLAGS=-c -I $(OBJDIR)
 EXEC = $(BINDIR)/$(TARGET)
